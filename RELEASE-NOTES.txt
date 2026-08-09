@@ -1,0 +1,19 @@
+EVDriveSound V10
+
+Changes:
+- Hyperdrive rebuilt from scratch
+- Turbine X rebuilt from scratch
+- Ion Storm rebuilt from scratch
+- Removed all noise generators and noise buffers
+- Increased overall loudness
+- Added compressor + soft limiter
+- Removed waveform visualization from UI
+- Increased PayPal QR size
+- Replaced logo with simple Tesla-browser-compatible SVG
+- No gears
+- No shift sounds
+- No RPM model
+- No transmission logic
+- No stepped sound zones
+- Continuous frequency mapping from Tesla GPS speed + smoothed acceleration
+- Service worker cache bumped to evdrivesound-v10

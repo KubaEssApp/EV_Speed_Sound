@@ -1,1 +1,54 @@
-const C='evdrivesound-v9-1-continuous-test',F=['./','./index.html','./app.min.css','./app.min.js','./manifest.json','./paypal-qr.png','./icon-192.png','./icon-512.png','./evds-logo.svg'];self.addEventListener('install',e=>{e.waitUntil(caches.open(C).then(c=>c.addAll(F)));self.skipWaiting()});self.addEventListener('activate',e=>{e.waitUntil(caches.keys().then(k=>Promise.all(k.filter(x=>x!==C).map(x=>caches.delete(x)))));self.clients.claim()});self.addEventListener('fetch',e=>{const r=e.request;if(r.method!=='GET')return;const u=new URL(r.url);if(u.origin!==self.location.origin)return;e.respondWith(fetch(r,{cache:'no-store'}).then(x=>{if(x&&x.ok&&x.type==='basic'){const y=x.clone();caches.open(C).then(c=>c.put(r,y))}return x}).catch(()=>caches.match(r)))})
+const CACHE="evdrivesound-v10";
+const FILES=[
+  "./",
+  "./index.html",
+  "./app.min.css",
+  "./app.min.js",
+  "./manifest.json",
+  "./evds-logo.svg",
+  "./paypal-qr.png",
+  "./icon-192.png",
+  "./icon-512.png"
+];
+
+self.addEventListener("install",event=>{
+  event.waitUntil(
+    caches.open(CACHE).then(cache=>cache.addAll(FILES))
+  );
+  self.skipWaiting();
+});
+
+self.addEventListener("activate",event=>{
+  event.waitUntil(
+    caches.keys().then(keys=>
+      Promise.all(
+        keys
+          .filter(key=>key!==CACHE)
+          .map(key=>caches.delete(key))
+      )
+    )
+  );
+  self.clients.claim();
+});
+
+self.addEventListener("fetch",event=>{
+  const req=event.request;
+
+  if(req.method!=="GET") return;
+
+  const url=new URL(req.url);
+
+  if(url.origin!==self.location.origin) return;
+
+  event.respondWith(
+    fetch(req,{cache:"no-store"})
+      .then(resp=>{
+        if(resp && resp.ok && resp.type==="basic"){
+          const copy=resp.clone();
+          caches.open(CACHE).then(cache=>cache.put(req,copy));
+        }
+        return resp;
+      })
+      .catch(()=>caches.match(req))
+  );
+});
