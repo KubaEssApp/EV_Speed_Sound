@@ -1,0 +1,7 @@
+EVDriveSound proprietary client build.
+Copyright © 2026. All rights reserved.
+
+This production package is minified and intentionally shipped without source maps.
+Reverse engineering, redistribution, or reuse may be restricted by applicable law
+and the project's license/terms. Client-side browser code can never be made
+cryptographically secret from a user who can execute it.

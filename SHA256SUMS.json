@@ -1,0 +1,11 @@
+{
+  "manifest.json": "86ca9adcc9ef32f2b55af384713df5eb5a7cb67846f1dc3afd312286af6e06eb",
+  "LICENSE-NOTICE.txt": "f8bf1dc7ec3b5478ed69d8010c72fd08ebfe5b7cf1c4624907ce1019f41e9618",
+  "app.min.css": "e1a33518098e5d9433f742124d882e8c6e96df8b89180074c7ac5ababfcdf624",
+  "icon-192.png": "63e6144aebe314877e4315302dad300e0c995d0c3fbebaa4f3fbe4d39419cbef",
+  "icon-512.png": "7fda6fab66e446534bc45a32cd0e87ab3381e61321eade463dd458cd87bf7c3c",
+  "service-worker.js": "0383824dc981b1b3a63424246a28667075eba57a51071377fbc64ed0b5398cb8",
+  "app.min.js": "cdcd3045fcf04750dce624e85e1864e3f3daeccb1e4ad253d26703735a3086cd",
+  "paypal-qr.png": "9e1c82b56c8d8cdf67b1e9fb48cb5f18f39003e26815876b8ece6ee82657dc01",
+  "index.html": "2ce0a5f3db31e97e63c7db5f9734aeee7b7bbfa6bd8fb44960b1815b4acafa97"
+}
