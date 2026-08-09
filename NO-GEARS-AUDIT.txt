@@ -1,0 +1,18 @@
+EVDriveSound V9 Continuous Sound Engine
+
+This build was regenerated from scratch specifically to remove all gear-shift behavior.
+
+Guaranteed by code structure:
+- No gear variable
+- No gear thresholds
+- No shift events
+- No shift sound
+- No RPM reset
+- No discrete frequency jumps
+- No staged transmission model
+
+All sound pitch is calculated continuously from:
+1. Tesla GPS speed
+2. Smoothed acceleration / deceleration
+
+Frequency changes use continuous setTargetAtTime() smoothing only.

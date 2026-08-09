@@ -1,0 +1,372 @@
+
+(()=>{
+"use strict";
+const $=id=>document.getElementById(id);
+
+let watchId=null;
+let lastT=null;
+let lastV=null;
+let speedKmh=0;
+let accelG=0;
+
+let ctx=null;
+let master=null;
+let compressor=null;
+let engine=null;
+let running=false;
+let profile="cyber";
+let testTimer=null;
+
+const PROFILE_DEFAULTS={
+  cyber:{base1:72,base2:144,base3:620,spd1:210,spd2:420,spd3:1100,acc1:80,acc2:160,acc3:520,gain:.46},
+  pod:{base1:48,base2:96,base3:360,spd1:165,spd2:330,spd3:900,acc1:110,acc2:210,acc3:650,gain:.45},
+  hyper:{base1:42,base2:84,base3:410,spd1:130,spd2:260,spd3:820,acc1:70,acc2:140,acc3:460,gain:.47},
+  turbine:{base1:90,base2:180,base3:820,spd1:340,spd2:680,spd3:1750,acc1:130,acc2:250,acc3:700,gain:.44},
+  ion:{base1:105,base2:315,base3:1180,spd1:320,spd2:760,spd3:2100,acc1:140,acc2:300,acc3:760,gain:.42},
+  phantom:{base1:30,base2:60,base3:120,spd1:80,spd2:160,spd3:320,acc1:50,acc2:90,acc3:180,gain:.50},
+  arc:{base1:66,base2:198,base3:930,spd1:250,spd2:600,spd3:1700,acc1:110,acc2:220,acc3:650,gain:.43},
+  zen:{base1:50,base2:100,base3:250,spd1:70,spd2:140,spd3:300,acc1:20,acc2:40,acc3:80,gain:.40}
+};
+
+function initAudio(){
+  if(ctx)return;
+  ctx=new(window.AudioContext||window.webkitAudioContext)({latencyHint:"interactive"});
+  master=ctx.createGain();
+  master.gain.value=Number($("volume").value)/100*.55;
+
+  compressor=ctx.createDynamicsCompressor();
+  compressor.threshold.value=-18;
+  compressor.knee.value=18;
+  compressor.ratio.value=4;
+  compressor.attack.value=.006;
+  compressor.release.value=.18;
+
+  master.connect(compressor).connect(ctx.destination);
+}
+
+function createOsc(type,freq,gain,out){
+  const osc=ctx.createOscillator();
+  const g=ctx.createGain();
+  osc.type=type;
+  osc.frequency.value=freq;
+  g.gain.value=gain;
+  osc.connect(g).connect(out);
+  osc.start();
+  return {osc,g};
+}
+
+function createNoise(out,gain,freq,type="bandpass"){
+  const len=ctx.sampleRate*2;
+  const b=ctx.createBuffer(1,len,ctx.sampleRate);
+  const d=b.getChannelData(0);
+  for(let i=0;i<len;i++)d[i]=Math.random()*2-1;
+
+  const src=ctx.createBufferSource();
+  const f=ctx.createBiquadFilter();
+  const g=ctx.createGain();
+
+  src.buffer=b;
+  src.loop=true;
+  f.type=type;
+  f.frequency.value=freq;
+  f.Q.value=.7;
+  g.gain.value=gain;
+
+  src.connect(f).connect(g).connect(out);
+  src.start();
+
+  return {src,f,g};
+}
+
+function stopEngine(){
+  if(!engine)return;
+  const e=engine;
+  engine=null;
+  try{
+    e.out.gain.cancelScheduledValues(ctx.currentTime);
+    e.out.gain.setTargetAtTime(.0001,ctx.currentTime,.08);
+  }catch{}
+  setTimeout(()=>{
+    try{e.nodes.forEach(n=>n.stop&&n.stop())}catch{}
+  },350);
+}
+
+function buildEngine(){
+  initAudio();
+  stopEngine();
+
+  const out=ctx.createGain();
+  out.gain.value=.001;
+  out.connect(master);
+
+  const p=PROFILE_DEFAULTS[profile];
+  let a,b,c,noise=null;
+
+  if(profile==="cyber"){
+    a=createOsc("sine",p.base1,.21,out);
+    b=createOsc("triangle",p.base2,.08,out);
+    c=createOsc("sine",p.base3,.012,out);
+  }else if(profile==="pod"){
+    a=createOsc("sawtooth",p.base1,.10,out);
+    b=createOsc("triangle",p.base2,.09,out);
+    c=createOsc("sine",p.base3,.015,out);
+    noise=createNoise(out,.012,650,"bandpass");
+  }else if(profile==="hyper"){
+    a=createOsc("sine",p.base1,.23,out);
+    b=createOsc("triangle",p.base2,.07,out);
+    c=createOsc("sine",p.base3,.014,out);
+  }else if(profile==="turbine"){
+    a=createOsc("sine",p.base1,.17,out);
+    b=createOsc("triangle",p.base2,.045,out);
+    c=createOsc("sine",p.base3,.010,out);
+    noise=createNoise(out,.018,1200,"bandpass");
+  }else if(profile==="ion"){
+    a=createOsc("sine",p.base1,.15,out);
+    b=createOsc("triangle",p.base2,.035,out);
+    c=createOsc("sine",p.base3,.009,out);
+    noise=createNoise(out,.007,1800,"highpass");
+  }else if(profile==="phantom"){
+    a=createOsc("sine",p.base1,.24,out);
+    b=createOsc("triangle",p.base2,.07,out);
+    c=createOsc("sine",p.base3,.020,out);
+  }else if(profile==="arc"){
+    a=createOsc("triangle",p.base1,.13,out);
+    b=createOsc("sine",p.base2,.028,out);
+    c=createOsc("sine",p.base3,.010,out);
+  }else{
+    a=createOsc("sine",p.base1,.18,out);
+    b=createOsc("sine",p.base2,.05,out);
+    c=createOsc("sine",p.base3,.008,out);
+  }
+
+  engine={out,a,b,c,noise,nodes:[a.osc,b.osc,c.osc]};
+  if(noise)engine.nodes.push(noise.src);
+
+  out.gain.setTargetAtTime(p.gain,ctx.currentTime,.25);
+}
+
+function continuousMap(){
+  if(!running||!engine||!ctx)return;
+
+  const t=ctx.currentTime;
+  const p=PROFILE_DEFAULTS[profile];
+
+  // Purely continuous variables. No gears, no thresholds, no steps, no shift events.
+  const speedNorm=Math.max(0,Math.min(1.35,speedKmh/170));
+  const accelPos=Math.max(0,Math.min(1,accelG/.45));
+  const decel=Math.max(0,Math.min(1,-accelG/.35));
+
+  const f1=p.base1 + speedNorm*p.spd1 + accelPos*p.acc1;
+  const f2=p.base2 + speedNorm*p.spd2 + accelPos*p.acc2;
+  const f3=p.base3 + speedNorm*p.spd3 + accelPos*p.acc3;
+
+  // Smooth glide only: continuous first-order transitions, never discrete resets.
+  engine.a.osc.frequency.setTargetAtTime(f1,t,.20);
+  engine.b.osc.frequency.setTargetAtTime(f2,t,.20);
+  engine.c.osc.frequency.setTargetAtTime(f3,t,.20);
+
+  if(engine.noise){
+    const nf=700 + speedNorm*2200 + accelPos*900;
+    engine.noise.f.frequency.setTargetAtTime(nf,t,.22);
+  }
+
+  const targetGain=Math.max(.20,p.gain + accelPos*.12 - decel*.06);
+  engine.out.gain.setTargetAtTime(targetGain,t,.20);
+}
+
+function onPosition(pos){
+  const s=pos.coords.speed;
+  if(typeof s!=="number"||!isFinite(s)||s<0){
+    $("gpsText").textContent="GPS CONNECTED · NO SPEED";
+    return;
+  }
+
+  const now=pos.timestamp||Date.now();
+  speedKmh=s*3.6;
+
+  if(lastT!==null&&lastV!==null){
+    const dt=(now-lastT)/1000;
+    if(dt>.08&&dt<5){
+      let raw=((s-lastV)/dt)/9.80665;
+      raw=Math.max(-1,Math.min(1,raw));
+
+      // Heavy continuous smoothing to eliminate audible stepping from GPS jitter.
+      accelG += (raw-accelG)*0.08;
+    }
+  }
+
+  lastT=now;
+  lastV=s;
+
+  $("gpsDot").classList.add("ok");
+  $("gpsText").textContent="GPS CONNECTED";
+  $("gpsFooter").textContent="Active";
+}
+
+function stopGPS(){
+  if(watchId!==null&&navigator.geolocation){
+    navigator.geolocation.clearWatch(watchId);
+  }
+  watchId=null;
+  lastT=null;
+  lastV=null;
+  $("gpsDot").classList.remove("ok");
+  $("gpsText").textContent="GPS NOT CONNECTED";
+  $("gpsFooter").textContent="Inactive";
+  if($("gpsToggle"))$("gpsToggle").textContent="ENABLE GPS";
+}
+
+function startGPS(){
+  if(!navigator.geolocation){
+    $("gpsText").textContent="GPS NOT AVAILABLE";
+    $("gpsFooter").textContent="Unavailable";
+    return;
+  }
+
+  if(watchId!==null){
+    stopGPS();
+    return;
+  }
+
+  $("gpsText").textContent="GPS REQUESTED";
+  $("gpsFooter").textContent="Requesting";
+
+  watchId=navigator.geolocation.watchPosition(
+    onPosition,
+    ()=>{
+      $("gpsDot").classList.remove("ok");
+      $("gpsText").textContent="GPS ERROR";
+      $("gpsFooter").textContent="Error";
+    },
+    {enableHighAccuracy:true,maximumAge:0,timeout:10000}
+  );
+
+  if($("gpsToggle"))$("gpsToggle").textContent="STOP GPS";
+}
+
+function setProfile(p){
+  profile=p;
+  document.querySelectorAll(".sound-btn").forEach(b=>{
+    b.classList.toggle("active",b.dataset.p===p);
+  });
+  if(running)buildEngine();
+}
+
+document.querySelectorAll(".sound-btn").forEach(b=>{
+  b.onclick=()=>setProfile(b.dataset.p);
+});
+
+$("startBtn").onclick=async()=>{
+  initAudio();
+  if(ctx.state==="suspended")await ctx.resume();
+
+  running=!running;
+
+  if(running){
+    buildEngine();
+    $("startBtn").textContent="STOP SOUND";
+    $("startBtn").classList.add("running");
+  }else{
+    stopEngine();
+    $("startBtn").textContent="START SOUND";
+    $("startBtn").classList.remove("running");
+  }
+};
+
+$("testBtn").onclick=async()=>{
+  initAudio();
+  if(ctx.state==="suspended")await ctx.resume();
+
+  if(!running){
+    running=true;
+    buildEngine();
+    $("startBtn").textContent="STOP SOUND";
+    $("startBtn").classList.add("running");
+  }
+
+  clearInterval(testTimer);
+  let t=0;
+  speedKmh=0;
+  accelG=0;
+
+  testTimer=setInterval(()=>{
+    t+=.05;
+
+    if(t<2.5){
+      accelG += (.28-accelG)*.08;
+      speedKmh += 1.15;
+    }else if(t<4.5){
+      accelG += (.08-accelG)*.08;
+      speedKmh += .45;
+    }else if(t<6.0){
+      accelG += (0-accelG)*.08;
+      speedKmh += .08;
+    }else if(t<8.0){
+      accelG += (-.16-accelG)*.08;
+      speedKmh=Math.max(0,speedKmh-.65);
+    }else{
+      clearInterval(testTimer);
+      testTimer=null;
+      speedKmh=0;
+      accelG=0;
+    }
+  },50);
+};
+
+$("volume").oninput=()=>{
+  const v=Number($("volume").value);
+  $("volPercent").textContent=v+"%";
+  if(ctx&&master){
+    master.gain.setTargetAtTime(v/100*.55,ctx.currentTime,.12);
+  }
+};
+
+$("refreshBtn").onclick=()=>window.location.reload();
+if($("gpsToggle"))$("gpsToggle").onclick=startGPS;
+
+function render(){
+  const boost=Math.round(Math.max(0,Math.min(1,accelG/.45))*100);
+  const decel=Math.round(Math.max(0,Math.min(1,-accelG/.35))*100);
+
+  let state="CRUISE",sub="Steady speed";
+  if(speedKmh<2&&Math.abs(accelG)<.02){state="READY";sub="Waiting for movement"}
+  else if(speedKmh<10&&accelG>.12){state="LAUNCH";sub="Strong acceleration"}
+  else if(accelG>.05){state="BOOST";sub="Acceleration"}
+  else if(accelG<-.05){state="DECEL";sub="Deceleration"}
+
+  $("speed").textContent=Math.round(speedKmh);
+  $("driveMode").textContent=state;
+  $("driveSub").textContent=sub;
+  $("gValue").textContent=(accelG>=0?"+":"")+accelG.toFixed(2)+" g";
+  $("boostValue").textContent=boost+" %";
+  $("decelValue").textContent=decel+" %";
+  $("wavePath").setAttribute("transform","translate(0 "+(-Math.max(-6,Math.min(6,accelG*16)))+")");
+
+  continuousMap();
+  requestAnimationFrame(render);
+}
+
+requestAnimationFrame(render);
+
+window.addEventListener("pagehide",()=>{
+  try{stopEngine()}catch{}
+  try{stopGPS()}catch{}
+  if(ctx&&ctx.state!=="closed"){
+    try{ctx.close()}catch{}
+  }
+});
+
+document.addEventListener("visibilitychange",()=>{
+  if(document.hidden&&ctx&&ctx.state==="running"){
+    ctx.suspend().catch(()=>{});
+  }else if(!document.hidden&&running&&ctx&&ctx.state==="suspended"){
+    ctx.resume().catch(()=>{});
+  }
+});
+
+if("serviceWorker" in navigator){
+  window.addEventListener("load",()=>{
+    navigator.serviceWorker.register("./service-worker.js",{scope:"./"}).catch(()=>{});
+  });
+}
+})();
