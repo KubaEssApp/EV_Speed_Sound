@@ -1,1 +1,169 @@
-<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover"><meta name="theme-color" content="#f3f4f6"><title>EVDriveSound V10</title><link rel="manifest" href="manifest.json"><meta http-equiv="Content-Security-Policy" content="default-src 'self'; base-uri 'none'; object-src 'none'; form-action 'none'; script-src 'self'; style-src 'self'; img-src 'self' data:; font-src 'self'; connect-src 'self'; media-src 'self'; worker-src 'self'; manifest-src 'self'; frame-src 'none'"><meta name="referrer" content="no-referrer"><meta http-equiv="X-Content-Type-Options" content="nosniff"><link rel="stylesheet" href="app.min.css?v=10.0"></head><body><div class="app"><header class="topbar"><div class="brand"><div class="brandmark">EV</div><div class="brandtext">EVDriveSound <span class="version">V10</span></div></div><div class="gps-status"><span id="gpsDot" class="gps-dot"></span><span id="gpsText">GPS NOT CONNECTED</span></div></header><main class="main"><section class="card drive-card"><div class="drive-top"><div><div class="kicker">Speed</div><div class="speed-row"><div id="speed" class="speed">0</div><div class="speed-unit">km/h</div></div></div><div class="divider"></div><div class="mode-wrap"><div><div class="kicker">Drive mode</div><div id="driveMode" class="drive-mode">READY</div><div id="driveSub" class="drive-sub">Waiting for movement</div></div><div class="vehicle"><img src="evds-logo.svg?v=10.0" class="evds-icon" alt="EVDriveSound logo"></div></div></div><div class="metrics"><div class="metric"><div class="metric-label">Acceleration</div><div id="gValue" class="metric-value">0.00 g</div></div><div class="metric"><div class="metric-label">Boost</div><div id="boostValue" class="metric-value">0 %</div></div><div class="metric"><div class="metric-label">Deceleration</div><div id="decelValue" class="metric-value">0 %</div></div></div><div class="volume-block"><div class="vol-icon">◀)</div><input id="volume" type="range" min="0" max="100" value="70"><div id="volPercent" class="vol-percent">70%</div></div><div class="actions"><button id="testBtn" class="action-btn">SOUND TEST</button><button id="startBtn" class="action-btn primary">START SOUND</button></div></section><section class="card sound-card"><div class="sound-title">SOUND PROFILE</div><div class="sound-list"><button class="sound-btn active" data-p="cyber"><span class="sound-icon">✦</span><span><span class="sound-name">CYBER PULSE</span><span class="sound-desc">Smooth electric performance</span></span><span class="radio"></span></button><button class="sound-btn" data-p="pod"><span class="sound-icon">◉</span><span><span class="sound-name">POD RACER</span><span class="sound-desc">Raw sci-fi propulsion</span></span><span class="radio"></span></button><button class="sound-btn" data-p="hyper"><span class="sound-icon">⇈</span><span><span class="sound-name">HYPERDRIVE</span><span class="sound-desc">Deep warp acceleration</span></span><span class="radio"></span></button><button class="sound-btn" data-p="turbine"><span class="sound-icon">✺</span><span><span class="sound-name">TURBINE X</span><span class="sound-desc">Clean jet spool</span></span><span class="radio"></span></button><button class="sound-btn" data-p="ion"><span class="sound-icon">ϟ</span><span><span class="sound-name">ION STORM</span><span class="sound-desc">Charged plasma drive</span></span><span class="radio"></span></button><button class="sound-btn" data-p="phantom"><span class="sound-icon">●</span><span><span class="sound-name">PHANTOM TORQUE</span><span class="sound-desc">Low stealth power</span></span><span class="radio"></span></button><button class="sound-btn" data-p="arc"><span class="sound-icon">⌁</span><span><span class="sound-name">ARC DRIVE</span><span class="sound-desc">Bright electric energy</span></span><span class="radio"></span></button><button class="sound-btn" data-p="zen"><span class="sound-icon">○</span><span><span class="sound-name">ZEN EV</span><span class="sound-desc">Calm premium EV tone</span></span><span class="radio"></span></button></div><div class="donate"><img src="paypal-qr.png" alt="PayPal donation QR"><div><div class="donate-title">Support EVDriveSound</div><div class="donate-text">Scan the QR code and use this PayPal recipient:</div><div class="donate-email">seeja@web.de</div></div></div></section></main><footer class="bottom"><div class="utility"><div class="u-icon">⌖</div><div><button id="gpsToggle">ENABLE GPS</button><div id="gpsFooter" class="u-sub">Inactive</div></div></div><div class="utility"><div class="u-icon">◎</div><div><div class="u-main">TESLA GPS</div><div class="u-sub">Processed locally only</div></div></div><div class="utility"><div class="u-icon">↻</div><div><button id="refreshBtn">REFRESH</button><div class="u-sub">Reload page</div></div></div><div class="utility footer-note">EVDriveSound V10 · Tesla Driving View</div></footer></div><script src="app.min.js?v=10.0" defer></script></body></html>
+<!doctype html>
+<html lang="en" data-theme="day">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<meta name="theme-color" content="#f4f4f5">
+<title>EVDriveSound V11</title>
+<link rel="manifest" href="manifest.json">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; base-uri 'none'; object-src 'none'; form-action 'none'; script-src 'self'; style-src 'self'; img-src 'self' data:; font-src 'self'; connect-src 'self'; media-src 'self'; worker-src 'self'; manifest-src 'self'; frame-src 'none'">
+<meta name="referrer" content="no-referrer">
+<meta http-equiv="X-Content-Type-Options" content="nosniff">
+<link rel="stylesheet" href="app.min.css?v=11.0">
+</head>
+<body>
+<div class="app">
+
+<header class="topbar">
+  <div class="brand">
+    <img src="evds-logo.svg?v=11.0" class="brand-logo" alt="EVDriveSound">
+    <div class="brandtext">EVDriveSound <span class="version">V11</span></div>
+  </div>
+
+  <div class="top-actions">
+    <button id="themeToggle" class="theme-toggle" aria-label="Switch color mode">
+      <span id="themeIcon">☀</span>
+      <span id="themeLabel">DAY</span>
+    </button>
+    <div class="gps-status">
+      <span id="gpsDot" class="gps-dot"></span>
+      <span id="gpsText">GPS NOT CONNECTED</span>
+    </div>
+  </div>
+</header>
+
+<main class="main">
+
+<section class="card speed-card">
+
+  <div class="speedometer-wrap">
+    <svg id="speedometer" class="speedometer" viewBox="0 0 700 420" aria-label="Speedometer">
+      <defs>
+        <filter id="softGlow" x="-40%" y="-40%" width="180%" height="180%">
+          <feGaussianBlur stdDeviation="3" result="blur"/>
+          <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+        </filter>
+      </defs>
+
+      <path id="arcTrack"
+            d="M 95 345 A 255 255 0 0 1 605 345"
+            fill="none"
+            class="arc-track"/>
+
+      <g id="ledSegments"></g>
+      <g id="speedLabels"></g>
+
+      <g id="needleGroup">
+        <line id="needle" x1="350" y1="345" x2="350" y2="105" class="needle"/>
+        <circle cx="350" cy="345" r="13" class="needle-hub"/>
+      </g>
+    </svg>
+
+    <div class="speed-center">
+      <div id="profileIcon" class="profile-icon">✦</div>
+      <div id="profileName" class="profile-name">CYBER PULSE</div>
+      <div id="speed" class="speed-value">0</div>
+      <div class="speed-unit">km/h</div>
+      <div id="driveMode" class="drive-mode">READY</div>
+    </div>
+  </div>
+
+  <div class="speed-controls">
+    <div class="volume-block">
+      <div class="vol-icon">◀)</div>
+      <input id="volume" type="range" min="0" max="100" value="78">
+      <div id="volPercent" class="vol-percent">78%</div>
+    </div>
+
+    <button id="testBtn" class="action-btn">SOUND TEST</button>
+    <button id="startBtn" class="action-btn primary">START SOUND</button>
+  </div>
+
+</section>
+
+<section class="card side-card">
+
+  <div class="sound-panel">
+    <div class="panel-title">SOUND PROFILE</div>
+
+    <div class="sound-list">
+      <button class="sound-btn active" data-p="cyber" data-icon="✦">
+        <span class="sound-icon">✦</span><span class="sound-name">CYBER PULSE</span><span class="radio"></span>
+      </button>
+
+      <button class="sound-btn" data-p="pod" data-icon="◉">
+        <span class="sound-icon">◉</span><span class="sound-name">POD RACER</span><span class="radio"></span>
+      </button>
+
+      <button class="sound-btn" data-p="hyper" data-icon="⇈">
+        <span class="sound-icon">⇈</span><span class="sound-name">HYPERDRIVE</span><span class="radio"></span>
+      </button>
+
+      <button class="sound-btn" data-p="turbine" data-icon="✺">
+        <span class="sound-icon">✺</span><span class="sound-name">TURBINE X</span><span class="radio"></span>
+      </button>
+
+      <button class="sound-btn" data-p="ion" data-icon="ϟ">
+        <span class="sound-icon">ϟ</span><span class="sound-name">ION STORM</span><span class="radio"></span>
+      </button>
+
+      <button class="sound-btn" data-p="phantom" data-icon="◉">
+        <span class="sound-icon">◉</span><span class="sound-name">PHANTOM TORQUE</span><span class="radio"></span>
+      </button>
+
+      <button class="sound-btn" data-p="arc" data-icon="⌁">
+        <span class="sound-icon">⌁</span><span class="sound-name">ARC DRIVE</span><span class="radio"></span>
+      </button>
+
+      <button class="sound-btn" data-p="zen" data-icon="○">
+        <span class="sound-icon">○</span><span class="sound-name">ZEN EV</span><span class="radio"></span>
+      </button>
+    </div>
+  </div>
+
+  <div class="donate">
+    <img src="paypal-qr.png" alt="PayPal donation QR">
+    <div class="donate-copy">
+      <div class="donate-title">SUPPORT EVDRIVESOUND</div>
+      <div class="donate-text">Scan the QR code to support development.</div>
+    </div>
+  </div>
+
+</section>
+
+</main>
+
+<footer class="bottom">
+  <div class="utility">
+    <div class="u-icon">⌖</div>
+    <div>
+      <button id="gpsToggle">ENABLE GPS</button>
+      <div id="gpsFooter" class="u-sub">Inactive</div>
+    </div>
+  </div>
+
+  <div class="utility">
+    <div class="u-icon">◎</div>
+    <div>
+      <div class="u-main">TESLA GPS</div>
+      <div class="u-sub">Processed locally only</div>
+    </div>
+  </div>
+
+  <div class="utility">
+    <div class="u-icon">↻</div>
+    <div>
+      <button id="refreshBtn">REFRESH</button>
+      <div class="u-sub">Reload page</div>
+    </div>
+  </div>
+
+  <div class="utility footer-note">
+    EVDriveSound V11 · Tesla Driving View
+  </div>
+</footer>
+
+</div>
+<script src="app.min.js?v=11.0" defer></script>
+</body>
+</html>

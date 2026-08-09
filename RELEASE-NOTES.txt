@@ -1,19 +1,18 @@
-EVDriveSound V10
+EVDriveSound V11
 
-Changes:
-- Hyperdrive rebuilt from scratch
-- Turbine X rebuilt from scratch
-- Ion Storm rebuilt from scratch
-- Removed all noise generators and noise buffers
-- Increased overall loudness
-- Added compressor + soft limiter
-- Removed waveform visualization from UI
-- Increased PayPal QR size
-- Replaced logo with simple Tesla-browser-compatible SVG
-- No gears
-- No shift sounds
-- No RPM model
-- No transmission logic
-- No stepped sound zones
-- Continuous frequency mapping from Tesla GPS speed + smoothed acceleration
-- Service worker cache bumped to evdrivesound-v10
+UI:
+- Single selectable Day or Dark mode; only one is visible at a time
+- Tesla-inspired white/gray and charcoal/gray themes
+- Large analog/futuristic speedometer with permanent numeric markings
+- LED arc progressively illuminates with speed
+- Animated needle
+- Active sound icon appears inside the speedometer
+- Sound list keeps icons and names only; descriptions removed
+- Acceleration / Boost / Deceleration panels removed
+- Wave visualization removed
+- Larger PayPal QR area
+- New EVDriveSound logo and PWA icons
+- Version updated everywhere to V11
+
+Audio:
+- Retains V10 continuous, no-noise, no-gears sound engine

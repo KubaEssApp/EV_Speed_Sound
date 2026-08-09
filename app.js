@@ -1,489 +1,258 @@
 (()=>{
 "use strict";
+const $=id=>document.getElementById(id);
 
-const $ = id => document.getElementById(id);
+let watchId=null,lastT=null,lastV=null;
+let speedKmh=0,accelG=0;
+let ctx=null,master=null,compressor=null,limiter=null,engine=null;
+let running=false,profile="cyber",testTimer=null;
 
-let watchId = null;
-let lastT = null;
-let lastV = null;
-
-let speedKmh = 0;
-let accelG = 0;
-
-let ctx = null;
-let master = null;
-let compressor = null;
-let limiter = null;
-let engine = null;
-
-let running = false;
-let profile = "cyber";
-let testTimer = null;
-
-const PROFILES = {
-  cyber:{
-    waves:["sine","triangle","sine"],
-    base:[76,152,610],
-    speed:[215,430,1050],
-    accel:[72,135,410],
-    mix:[0.31,0.13,0.025],
-    level:0.72
-  },
-  pod:{
-    waves:["sawtooth","triangle","sine"],
-    base:[52,104,330],
-    speed:[150,305,760],
-    accel:[90,175,470],
-    mix:[0.18,0.14,0.025],
-    level:0.70
-  },
-  hyper:{
-    waves:["sine","triangle","sine"],
-    base:[58,174,690],
-    speed:[190,445,1420],
-    accel:[62,150,510],
-    mix:[0.30,0.115,0.026],
-    level:0.76
-  },
-  turbine:{
-    waves:["sine","sine","triangle"],
-    base:[92,275,880],
-    speed:[330,760,1980],
-    accel:[100,210,590],
-    mix:[0.26,0.085,0.024],
-    level:0.76
-  },
-  ion:{
-    waves:["sine","triangle","sine"],
-    base:[112,336,1260],
-    speed:[280,720,2200],
-    accel:[92,220,610],
-    mix:[0.25,0.070,0.018],
-    level:0.72
-  },
-  phantom:{
-    waves:["sine","triangle","sine"],
-    base:[34,68,136],
-    speed:[82,164,330],
-    accel:[42,80,150],
-    mix:[0.34,0.105,0.034],
-    level:0.76
-  },
-  arc:{
-    waves:["triangle","sine","sine"],
-    base:[72,216,930],
-    speed:[225,590,1670],
-    accel:[78,170,460],
-    mix:[0.23,0.065,0.020],
-    level:0.72
-  },
-  zen:{
-    waves:["sine","sine","sine"],
-    base:[52,104,260],
-    speed:[70,140,310],
-    accel:[15,28,50],
-    mix:[0.30,0.085,0.015],
-    level:0.64
-  }
+const PROFILE_NAMES={
+  cyber:"CYBER PULSE",pod:"POD RACER",hyper:"HYPERDRIVE",turbine:"TURBINE X",
+  ion:"ION STORM",phantom:"PHANTOM TORQUE",arc:"ARC DRIVE",zen:"ZEN EV"
 };
 
-function softSaturate(value, scale=1){
-  return Math.tanh(value / scale);
+const PROFILES={
+  cyber:{waves:["sine","triangle","sine"],base:[76,152,610],speed:[215,430,1050],accel:[72,135,410],mix:[.31,.13,.025],level:.72},
+  pod:{waves:["sawtooth","triangle","sine"],base:[52,104,330],speed:[150,305,760],accel:[90,175,470],mix:[.18,.14,.025],level:.70},
+  hyper:{waves:["sine","triangle","sine"],base:[58,174,690],speed:[190,445,1420],accel:[62,150,510],mix:[.30,.115,.026],level:.76},
+  turbine:{waves:["sine","sine","triangle"],base:[92,275,880],speed:[330,760,1980],accel:[100,210,590],mix:[.26,.085,.024],level:.76},
+  ion:{waves:["sine","triangle","sine"],base:[112,336,1260],speed:[280,720,2200],accel:[92,220,610],mix:[.25,.070,.018],level:.72},
+  phantom:{waves:["sine","triangle","sine"],base:[34,68,136],speed:[82,164,330],accel:[42,80,150],mix:[.34,.105,.034],level:.76},
+  arc:{waves:["triangle","sine","sine"],base:[72,216,930],speed:[225,590,1670],accel:[78,170,460],mix:[.23,.065,.020],level:.72},
+  zen:{waves:["sine","sine","sine"],base:[52,104,260],speed:[70,140,310],accel:[15,28,50],mix:[.30,.085,.015],level:.64}
+};
+
+function softSaturate(value,scale=1){return Math.tanh(value/scale)}
+
+function setTheme(theme){
+  const t=theme==="dark"?"dark":"day";
+  document.documentElement.dataset.theme=t;
+  localStorage.setItem("evds-theme",t);
+  $("themeIcon").textContent=t==="dark"?"☾":"☀";
+  $("themeLabel").textContent=t==="dark"?"DARK":"DAY";
+}
+$("themeToggle").onclick=()=>{
+  setTheme(document.documentElement.dataset.theme==="dark"?"day":"dark");
+};
+setTheme(localStorage.getItem("evds-theme")||"day");
+
+function initGauge(){
+  const ledGroup=$("ledSegments");
+  const labelGroup=$("speedLabels");
+  const cx=350,cy=345,r1=245,r2=265;
+  const segmentCount=31;
+
+  for(let i=0;i<segmentCount;i++){
+    const ratio=i/(segmentCount-1);
+    const angle=Math.PI-(Math.PI*ratio);
+    const x1=cx+Math.cos(angle)*r1;
+    const y1=cy-Math.sin(angle)*r1;
+    const x2=cx+Math.cos(angle)*r2;
+    const y2=cy-Math.sin(angle)*r2;
+    const line=document.createElementNS("http://www.w3.org/2000/svg","line");
+    line.setAttribute("x1",x1);line.setAttribute("y1",y1);
+    line.setAttribute("x2",x2);line.setAttribute("y2",y2);
+    line.setAttribute("class","led-segment");
+    line.dataset.index=i;
+    ledGroup.appendChild(line);
+  }
+
+  for(let value=0;value<=300;value+=20){
+    const ratio=value/300;
+    const angle=Math.PI-(Math.PI*ratio);
+    const r=289;
+    const x=cx+Math.cos(angle)*r;
+    const y=cy-Math.sin(angle)*r+5;
+    const text=document.createElementNS("http://www.w3.org/2000/svg","text");
+    text.setAttribute("x",x);text.setAttribute("y",y);
+    text.setAttribute("class","speed-label");
+    text.textContent=value;
+    labelGroup.appendChild(text);
+  }
+}
+initGauge();
+
+function renderGauge(){
+  const clamped=Math.max(0,Math.min(300,speedKmh));
+  const ratio=clamped/300;
+  const rotation=-90+ratio*180;
+  $("needle").style.transform=`rotate(${rotation}deg)`;
+
+  const activeCount=Math.round(ratio*30);
+  document.querySelectorAll(".led-segment").forEach((el,i)=>{
+    el.classList.toggle("active",i<=activeCount);
+  });
 }
 
 function initAudio(){
-  if(ctx) return;
+  if(ctx)return;
+  ctx=new(window.AudioContext||window.webkitAudioContext)({latencyHint:"interactive"});
+  master=ctx.createGain();
+  master.gain.value=Number($("volume").value)/100*.82;
 
-  ctx = new (window.AudioContext || window.webkitAudioContext)({
-    latencyHint:"interactive"
-  });
+  compressor=ctx.createDynamicsCompressor();
+  compressor.threshold.value=-15;compressor.knee.value=12;compressor.ratio.value=3.5;
+  compressor.attack.value=.004;compressor.release.value=.18;
 
-  master = ctx.createGain();
-  master.gain.value = Number($("volume").value) / 100 * 0.82;
-
-  compressor = ctx.createDynamicsCompressor();
-  compressor.threshold.value = -15;
-  compressor.knee.value = 12;
-  compressor.ratio.value = 3.5;
-  compressor.attack.value = 0.004;
-  compressor.release.value = 0.18;
-
-  limiter = ctx.createWaveShaper();
-  const curve = new Float32Array(65536);
-
+  limiter=ctx.createWaveShaper();
+  const curve=new Float32Array(65536);
   for(let i=0;i<curve.length;i++){
-    const x = (i / (curve.length - 1)) * 2 - 1;
-    curve[i] = Math.tanh(x * 1.45) / Math.tanh(1.45);
+    const x=(i/(curve.length-1))*2-1;
+    curve[i]=Math.tanh(x*1.45)/Math.tanh(1.45);
   }
-
-  limiter.curve = curve;
-  limiter.oversample = "4x";
-
-  master
-    .connect(compressor)
-    .connect(limiter)
-    .connect(ctx.destination);
+  limiter.curve=curve;limiter.oversample="4x";
+  master.connect(compressor).connect(limiter).connect(ctx.destination);
 }
 
-function createVoice(type, frequency, volume, output){
-  const oscillator = ctx.createOscillator();
-  const gain = ctx.createGain();
-
-  oscillator.type = type;
-  oscillator.frequency.value = frequency;
-  gain.gain.value = volume;
-
-  oscillator
-    .connect(gain)
-    .connect(output);
-
-  oscillator.start();
-
-  return { oscillator, gain };
+function createVoice(type,frequency,volume,output){
+  const oscillator=ctx.createOscillator(),gain=ctx.createGain();
+  oscillator.type=type;oscillator.frequency.value=frequency;gain.gain.value=volume;
+  oscillator.connect(gain).connect(output);oscillator.start();
+  return{oscillator,gain};
 }
-
 function stopEngine(){
-  if(!engine) return;
-
-  const oldEngine = engine;
-  engine = null;
-
-  const now = ctx.currentTime;
-
-  try{
-    oldEngine.output.gain.cancelScheduledValues(now);
-    oldEngine.output.gain.setTargetAtTime(0.0001, now, 0.08);
-  }catch{}
-
-  setTimeout(()=>{
-    try{
-      oldEngine.voices.forEach(voice => voice.oscillator.stop());
-    }catch{}
-  },350);
+  if(!engine)return;
+  const old=engine;engine=null;const now=ctx.currentTime;
+  try{old.output.gain.cancelScheduledValues(now);old.output.gain.setTargetAtTime(.0001,now,.08)}catch{}
+  setTimeout(()=>{try{old.voices.forEach(v=>v.oscillator.stop())}catch{}},350);
 }
-
 function buildEngine(){
-  initAudio();
-  stopEngine();
-
-  const config = PROFILES[profile];
-  const output = ctx.createGain();
-
-  output.gain.value = 0.0001;
-  output.connect(master);
-
-  const voices = config.waves.map((wave,index)=>
-    createVoice(
-      wave,
-      config.base[index],
-      config.mix[index],
-      output
-    )
-  );
-
-  engine = { output, voices };
-
-  output.gain.setTargetAtTime(
-    config.level,
-    ctx.currentTime,
-    0.18
-  );
+  initAudio();stopEngine();
+  const c=PROFILES[profile],output=ctx.createGain();
+  output.gain.value=.0001;output.connect(master);
+  const voices=c.waves.map((wave,i)=>createVoice(wave,c.base[i],c.mix[i],output));
+  engine={output,voices};
+  output.gain.setTargetAtTime(c.level,ctx.currentTime,.18);
 }
-
 function updateSound(){
-  if(!running || !engine || !ctx) return;
+  if(!running||!engine||!ctx)return;
+  const c=PROFILES[profile],now=ctx.currentTime;
+  const speedDrive=softSaturate(speedKmh/155);
+  const pos=(softSaturate(accelG/.38)+1)/2;
+  const neg=(softSaturate(-accelG/.30)+1)/2;
 
-  const config = PROFILES[profile];
-  const now = ctx.currentTime;
-
-  const speedDrive = softSaturate(speedKmh / 155);
-  const positiveAcceleration = (softSaturate(accelG / 0.38) + 1) / 2;
-  const negativeAcceleration = (softSaturate(-accelG / 0.30) + 1) / 2;
-
-  engine.voices.forEach((voice,index)=>{
-    const targetFrequency =
-      config.base[index] +
-      speedDrive * config.speed[index] +
-      positiveAcceleration * config.accel[index];
-
-    voice.oscillator.frequency.setTargetAtTime(
-      targetFrequency,
-      now,
-      0.26
-    );
+  engine.voices.forEach((voice,i)=>{
+    const target=c.base[i]+speedDrive*c.speed[i]+pos*c.accel[i];
+    voice.oscillator.frequency.setTargetAtTime(target,now,.26);
   });
-
-  const accelerationVolume = positiveAcceleration * 0.12;
-  const decelerationReduction = negativeAcceleration * 0.045;
-
-  const targetLevel =
-    config.level +
-    accelerationVolume -
-    decelerationReduction;
-
-  engine.output.gain.setTargetAtTime(
-    targetLevel,
-    now,
-    0.22
-  );
+  const level=c.level+pos*.12-neg*.045;
+  engine.output.gain.setTargetAtTime(level,now,.22);
 }
 
 function onPosition(position){
-  const speed = position.coords.speed;
-
-  if(
-    typeof speed !== "number" ||
-    !Number.isFinite(speed) ||
-    speed < 0
-  ){
-    $("gpsText").textContent = "GPS CONNECTED · NO SPEED";
-    return;
+  const speed=position.coords.speed;
+  if(typeof speed!=="number"||!Number.isFinite(speed)||speed<0){
+    $("gpsText").textContent="GPS CONNECTED · NO SPEED";return;
   }
-
-  const now = position.timestamp || Date.now();
-  speedKmh = speed * 3.6;
-
-  if(lastT !== null && lastV !== null){
-    const dt = (now - lastT) / 1000;
-
-    if(dt > 0.08 && dt < 5){
-      const measuredAcceleration =
-        ((speed - lastV) / dt) / 9.80665;
-
-      accelG += (measuredAcceleration - accelG) * 0.055;
+  const now=position.timestamp||Date.now();
+  speedKmh=speed*3.6;
+  if(lastT!==null&&lastV!==null){
+    const dt=(now-lastT)/1000;
+    if(dt>.08&&dt<5){
+      const measured=((speed-lastV)/dt)/9.80665;
+      accelG+=(measured-accelG)*.055;
     }
   }
-
-  lastT = now;
-  lastV = speed;
-
+  lastT=now;lastV=speed;
   $("gpsDot").classList.add("ok");
-  $("gpsText").textContent = "GPS CONNECTED";
-  $("gpsFooter").textContent = "Active";
+  $("gpsText").textContent="GPS CONNECTED";
+  $("gpsFooter").textContent="Active";
 }
-
 function stopGPS(){
-  if(watchId !== null && navigator.geolocation){
-    navigator.geolocation.clearWatch(watchId);
-  }
-
-  watchId = null;
-  lastT = null;
-  lastV = null;
-
+  if(watchId!==null&&navigator.geolocation)navigator.geolocation.clearWatch(watchId);
+  watchId=null;lastT=null;lastV=null;
   $("gpsDot").classList.remove("ok");
-  $("gpsText").textContent = "GPS NOT CONNECTED";
-  $("gpsFooter").textContent = "Inactive";
-  $("gpsToggle").textContent = "ENABLE GPS";
+  $("gpsText").textContent="GPS NOT CONNECTED";
+  $("gpsFooter").textContent="Inactive";
+  $("gpsToggle").textContent="ENABLE GPS";
 }
-
 function startGPS(){
   if(!navigator.geolocation){
-    $("gpsText").textContent = "GPS NOT AVAILABLE";
-    $("gpsFooter").textContent = "Unavailable";
-    return;
+    $("gpsText").textContent="GPS NOT AVAILABLE";$("gpsFooter").textContent="Unavailable";return;
   }
-
-  if(watchId !== null){
-    stopGPS();
-    return;
-  }
-
-  $("gpsText").textContent = "GPS REQUESTED";
-  $("gpsFooter").textContent = "Requesting";
-
-  watchId = navigator.geolocation.watchPosition(
+  if(watchId!==null){stopGPS();return}
+  $("gpsText").textContent="GPS REQUESTED";$("gpsFooter").textContent="Requesting";
+  watchId=navigator.geolocation.watchPosition(
     onPosition,
-    ()=>{
-      $("gpsDot").classList.remove("ok");
-      $("gpsText").textContent = "GPS ERROR";
-      $("gpsFooter").textContent = "Error";
-    },
-    {
-      enableHighAccuracy:true,
-      maximumAge:0,
-      timeout:10000
-    }
+    ()=>{$("gpsDot").classList.remove("ok");$("gpsText").textContent="GPS ERROR";$("gpsFooter").textContent="Error"},
+    {enableHighAccuracy:true,maximumAge:0,timeout:10000}
   );
-
-  $("gpsToggle").textContent = "STOP GPS";
+  $("gpsToggle").textContent="STOP GPS";
 }
+$("gpsToggle").onclick=startGPS;
 
-function setProfile(newProfile){
-  profile = newProfile;
-
-  document.querySelectorAll(".sound-btn").forEach(button =>
-    button.classList.toggle(
-      "active",
-      button.dataset.p === newProfile
-    )
-  );
-
-  if(running) buildEngine();
+function setProfile(newProfile,button){
+  profile=newProfile;
+  document.querySelectorAll(".sound-btn").forEach(b=>b.classList.toggle("active",b.dataset.p===newProfile));
+  $("profileName").textContent=PROFILE_NAMES[newProfile];
+  $("profileIcon").textContent=button?.dataset.icon||"✦";
+  if(running)buildEngine();
 }
+document.querySelectorAll(".sound-btn").forEach(button=>{
+  button.onclick=()=>setProfile(button.dataset.p,button);
+});
 
-document.querySelectorAll(".sound-btn").forEach(button =>
-  button.onclick = ()=>setProfile(button.dataset.p)
-);
-
-$("startBtn").onclick = async()=>{
-  initAudio();
-
-  if(ctx.state === "suspended"){
-    await ctx.resume();
-  }
-
-  running = !running;
-
+$("startBtn").onclick=async()=>{
+  initAudio();if(ctx.state==="suspended")await ctx.resume();
+  running=!running;
   if(running){
-    buildEngine();
-    $("startBtn").textContent = "STOP SOUND";
-    $("startBtn").classList.add("running");
+    buildEngine();$("startBtn").textContent="STOP SOUND";$("startBtn").classList.add("running");
   }else{
-    stopEngine();
-    $("startBtn").textContent = "START SOUND";
-    $("startBtn").classList.remove("running");
+    stopEngine();$("startBtn").textContent="START SOUND";$("startBtn").classList.remove("running");
   }
 };
 
-$("testBtn").onclick = async()=>{
-  initAudio();
-
-  if(ctx.state === "suspended"){
-    await ctx.resume();
-  }
-
+$("testBtn").onclick=async()=>{
+  initAudio();if(ctx.state==="suspended")await ctx.resume();
   if(!running){
-    running = true;
-    buildEngine();
-    $("startBtn").textContent = "STOP SOUND";
-    $("startBtn").classList.add("running");
+    running=true;buildEngine();$("startBtn").textContent="STOP SOUND";$("startBtn").classList.add("running");
   }
-
   clearInterval(testTimer);
-
-  const testStart = performance.now();
-  const duration = 10000;
-
-  testTimer = setInterval(()=>{
-    const elapsed = performance.now() - testStart;
-    const u = Math.min(elapsed / duration, 1);
-
-    speedKmh =
-      62.5 *
-      (1 - Math.cos(2 * Math.PI * u));
-
-    const dvdt =
-      125 *
-      Math.PI *
-      Math.sin(2 * Math.PI * u) /
-      (duration / 1000);
-
-    const targetG =
-      (dvdt / 3.6) /
-      9.80665;
-
-    accelG += (targetG - accelG) * 0.04;
-
-    if(u >= 1){
-      clearInterval(testTimer);
-      testTimer = null;
-      speedKmh = 0;
-      accelG = 0;
-    }
-
+  const start=performance.now(),duration=10000;
+  testTimer=setInterval(()=>{
+    const u=Math.min((performance.now()-start)/duration,1);
+    speedKmh=62.5*(1-Math.cos(2*Math.PI*u));
+    const dvdt=125*Math.PI*Math.sin(2*Math.PI*u)/(duration/1000);
+    const targetG=(dvdt/3.6)/9.80665;
+    accelG+=(targetG-accelG)*.04;
+    if(u>=1){clearInterval(testTimer);testTimer=null;speedKmh=0;accelG=0}
   },20);
 };
 
-$("volume").oninput = ()=>{
-  const volume = Number($("volume").value);
-  $("volPercent").textContent = volume + "%";
-
-  if(ctx && master){
-    master.gain.setTargetAtTime(
-      volume / 100 * 0.82,
-      ctx.currentTime,
-      0.10
-    );
-  }
+$("volume").oninput=()=>{
+  const v=Number($("volume").value);
+  $("volPercent").textContent=v+"%";
+  if(ctx&&master)master.gain.setTargetAtTime(v/100*.82,ctx.currentTime,.10);
 };
-
-$("refreshBtn").onclick = ()=>window.location.reload();
-$("gpsToggle").onclick = startGPS;
+$("refreshBtn").onclick=()=>window.location.reload();
 
 function render(){
-  const boost = Math.round(
-    softSaturate(
-      Math.max(accelG,0) / 0.35
-    ) * 100
-  );
+  let mode="CRUISE";
+  if(speedKmh<2&&Math.abs(accelG)<.02)mode="READY";
+  else if(accelG>.05)mode="BOOST";
+  else if(accelG<-.05)mode="DECEL";
 
-  const decel = Math.round(
-    softSaturate(
-      Math.max(-accelG,0) / 0.30
-    ) * 100
-  );
-
-  let mode = "CRUISE";
-  let description = "Steady speed";
-
-  if(speedKmh < 2 && Math.abs(accelG) < .02){
-    mode = "READY";
-    description = "Waiting for movement";
-  }else if(accelG > .05){
-    mode = "BOOST";
-    description = "Acceleration";
-  }else if(accelG < -.05){
-    mode = "DECEL";
-    description = "Deceleration";
-  }
-
-  $("speed").textContent = Math.round(speedKmh);
-  $("driveMode").textContent = mode;
-  $("driveSub").textContent = description;
-
-  $("gValue").textContent =
-    (accelG >= 0 ? "+" : "") +
-    accelG.toFixed(2) +
-    " g";
-
-  $("boostValue").textContent = boost + " %";
-  $("decelValue").textContent = decel + " %";
-
+  $("speed").textContent=Math.round(speedKmh);
+  $("driveMode").textContent=mode;
+  renderGauge();
   updateSound();
   requestAnimationFrame(render);
 }
-
 requestAnimationFrame(render);
 
 window.addEventListener("pagehide",()=>{
-  try{ stopEngine(); }catch{}
-  try{ stopGPS(); }catch{}
-
-  if(ctx && ctx.state !== "closed"){
-    ctx.close().catch(()=>{});
-  }
+  try{stopEngine()}catch{}
+  try{stopGPS()}catch{}
+  if(ctx&&ctx.state!=="closed")ctx.close().catch(()=>{});
 });
-
 document.addEventListener("visibilitychange",()=>{
-  if(document.hidden && ctx && ctx.state === "running"){
-    ctx.suspend().catch(()=>{});
-  }else if(
-    !document.hidden &&
-    running &&
-    ctx &&
-    ctx.state === "suspended"
-  ){
-    ctx.resume().catch(()=>{});
-  }
+  if(document.hidden&&ctx&&ctx.state==="running")ctx.suspend().catch(()=>{});
+  else if(!document.hidden&&running&&ctx&&ctx.state==="suspended")ctx.resume().catch(()=>{});
 });
-
 if("serviceWorker" in navigator){
   window.addEventListener("load",()=>{
-    navigator.serviceWorker
-      .register("./service-worker.js",{scope:"./"})
-      .catch(()=>{});
+    navigator.serviceWorker.register("./service-worker.js",{scope:"./"}).catch(()=>{});
   });
 }
-
 })();
