@@ -1,0 +1,18 @@
+EVDriveSound V9.1 – Continuous Sound Test
+
+The previous test still contained staged time blocks. Those stages could be heard as thresholds even though the sound engine itself had no gears.
+
+V9.1 removes the staged test completely.
+
+The test now uses:
+- one continuous smoothstep time curve
+- one continuous sine speed envelope
+- analytical acceleration from the derivative of that curve
+- continuous low-pass smoothing
+- 20 ms updates
+- no if/else acceleration stages
+- no gear thresholds
+- no shift events
+- no frequency resets
+
+The only endpoint condition is stopping the completed test at 9 seconds.

@@ -285,32 +285,39 @@ $("testBtn").onclick=async()=>{
   }
 
   clearInterval(testTimer);
-  let t=0;
-  speedKmh=0;
-  accelG=0;
+
+  const startTime=performance.now();
+  const duration=9000;
 
   testTimer=setInterval(()=>{
-    t+=.05;
+    const elapsed=performance.now()-startTime;
+    let u=Math.min(1,elapsed/duration);
 
-    if(t<2.5){
-      accelG += (.28-accelG)*.08;
-      speedKmh += 1.15;
-    }else if(t<4.5){
-      accelG += (.08-accelG)*.08;
-      speedKmh += .45;
-    }else if(t<6.0){
-      accelG += (0-accelG)*.08;
-      speedKmh += .08;
-    }else if(t<8.0){
-      accelG += (-.16-accelG)*.08;
-      speedKmh=Math.max(0,speedKmh-.65);
-    }else{
+    // Smoothstep: zero slope at both ends, no thresholds, no stages.
+    const s=u*u*(3-2*u);
+
+    // Continuous 0 -> 110 -> 0 km/h profile using a sine envelope.
+    const envelope=Math.sin(Math.PI*s);
+    speedKmh=110*envelope;
+
+    // Analytical derivative of the continuous speed curve.
+    // This produces one seamless acceleration -> cruise apex -> deceleration transition.
+    const dsdu=6*u*(1-u);
+    const dvdu=110*Math.PI*Math.cos(Math.PI*s)*dsdu;
+    const dvdt=dvdu/(duration/1000); // km/h per second
+    const accelMs2=(dvdt/3.6);
+    const targetG=accelMs2/9.80665;
+
+    // Additional low-pass smoothing so no GPS/test stepping is audible.
+    accelG+=(targetG-accelG)*0.06;
+
+    if(u>=1){
       clearInterval(testTimer);
       testTimer=null;
       speedKmh=0;
       accelG=0;
     }
-  },50);
+  },20);
 };
 
 $("volume").oninput=()=>{
