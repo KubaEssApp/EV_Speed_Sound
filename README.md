@@ -1,6 +1,6 @@
-# EVDRIVE V13 – Tesla Cockpit + Classic Diesel
+# EVDRIVE V14 – Tesla Cockpit + Classic Diesel
 
-## Neu in V13
+## Neu in V14
 - Tesla-Querformat-Cockpit: Tacho links dominant, Bedienung rechts kompakt, keine Seiten-Scrollerei im Desktop-/Tesla-Layout.
 - 6 Drive Modes: SPORT EXPERIENCE, CYBER EV, POD RACER, V10 SYNTH, CLASSIC DIESEL, WARP.
 - CLASSIC DIESEL mit dynamischer WebAudio-Synthese:
@@ -12,7 +12,7 @@
   - Ansaug-/Turbo-Anteil abhängig von Last und Drehzahl
   - Live-Anzeige von RPM und virtuellem Gang
 - Schnellere Lastreaktion über DeviceMotion, wenn vom Browser verfügbar.
-- SPORT EXPERIENCE und 0–100-Logik aus V12.1 bleiben erhalten.
+- SPORT EXPERIENCE und 0–100-Logik aus V14.1 bleiben erhalten.
 
 ## Empfohlener Test
 1. `index.html` über HTTPS hosten (z. B. GitHub Pages).
