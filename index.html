@@ -1,169 +1,1247 @@
 <!doctype html>
-<html lang="en" data-theme="day">
+<html lang="en">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
-<meta name="theme-color" content="#f4f4f5">
-<title>EVDriveSound V11</title>
-<link rel="manifest" href="manifest.json">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; base-uri 'none'; object-src 'none'; form-action 'none'; script-src 'self'; style-src 'self'; img-src 'self' data:; font-src 'self'; connect-src 'self'; media-src 'self'; worker-src 'self'; manifest-src 'self'; frame-src 'none'">
-<meta name="referrer" content="no-referrer">
-<meta http-equiv="X-Content-Type-Options" content="nosniff">
-<link rel="stylesheet" href="app.min.css?v=11.0">
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <meta name="theme-color" content="#090a0c" />
+  <title>EVDRIVE V12.1 · Sport Experience</title>
+  <style>
+:root {
+  --bg: #0b0c0e;
+  --panel: #131518;
+  --panel-2: #1a1d21;
+  --line: #2b2f34;
+  --text: #f4f4f5;
+  --muted: #9ca1a8;
+  --soft: #747a82;
+  --accent: #f5f5f5;
+  --accent-text: #111214;
+  --sport: #ff2d2d;
+  --sport-2: #ff5b32;
+  --sport-soft: rgba(255,45,45,.18);
+  --shadow: 0 18px 60px rgba(0,0,0,.28);
+  --radius: 22px;
+}
+
+body.light {
+  --bg: #eceeef;
+  --panel: #f7f7f8;
+  --panel-2: #e5e7e9;
+  --line: #d3d6d9;
+  --text: #161719;
+  --muted: #666b72;
+  --soft: #8b9096;
+  --accent: #1a1b1d;
+  --accent-text: #f7f7f8;
+  --shadow: 0 18px 60px rgba(34,38,42,.10);
+}
+
+* { box-sizing: border-box; }
+html { background: var(--bg); }
+body {
+  margin: 0;
+  min-height: 100vh;
+  background: radial-gradient(circle at 50% -10%, rgba(255,255,255,.055), transparent 35%), var(--bg);
+  color: var(--text);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  transition: background .28s ease, color .25s ease;
+}
+body.sport-active {
+  background:
+    radial-gradient(circle at 50% -15%, rgba(255,45,45,.22), transparent 33%),
+    radial-gradient(circle at 8% 15%, rgba(255,76,30,.07), transparent 28%),
+    var(--bg);
+}
+button, input, select { font: inherit; }
+button { -webkit-tap-highlight-color: transparent; }
+
+.sport-flash { position:fixed; inset:0; pointer-events:none; z-index:999; opacity:0; background:radial-gradient(circle at 50% 42%, rgba(255,57,36,.32), transparent 42%); }
+.sport-flash.fire { animation:sportFlash .78s ease-out; }
+@keyframes sportFlash { 0%{opacity:0} 18%{opacity:1} 100%{opacity:0} }
+
+.app-shell { width: min(1180px, calc(100% - 32px)); margin: 0 auto; padding: 26px 0 42px; }
+.topbar { display:flex; justify-content:space-between; align-items:center; gap:18px; margin-bottom:22px; }
+.brand-wrap { display:flex; align-items:center; gap:12px; }
+.brand-mark { width:38px; height:38px; border:1px solid var(--line); border-radius:12px; display:grid; place-items:center; font-weight:800; letter-spacing:-.06em; background:var(--panel); box-shadow:var(--shadow); transition:.25s ease; }
+body.sport-active .brand-mark { color:#fff; background:linear-gradient(145deg,#ff352d,#8f0000); border-color:rgba(255,93,72,.7); box-shadow:0 0 30px rgba(255,45,45,.26); }
+.brand { font-size:17px; letter-spacing:.18em; font-weight:800; }
+.version { font-size:11px; color:var(--muted); margin-top:3px; letter-spacing:.04em; }
+.top-actions { display:flex; gap:9px; }
+.icon-btn, .pill, .primary, .secondary, .tab, .mode-card { border:0; cursor:pointer; color:var(--text); }
+.icon-btn { width:40px; height:40px; border-radius:12px; background:var(--panel); border:1px solid var(--line); }
+.pill { background:var(--panel); border:1px solid var(--line); border-radius:999px; padding:0 16px; min-height:40px; font-size:11px; font-weight:800; letter-spacing:.09em; }
+.pill.on { background:var(--accent); color:var(--accent-text); }
+
+.hero-card, .controls-card, .sport-settings, .permission-card, .chart-card { background:linear-gradient(180deg, rgba(255,255,255,.015), rgba(255,255,255,0)), var(--panel); border:1px solid var(--line); border-radius:var(--radius); box-shadow:var(--shadow); }
+.hero-card { padding:18px 24px 22px; transition:border-color .3s ease, box-shadow .3s ease, background .3s ease; }
+body.sport-active .hero-card { border-color:rgba(255,55,45,.48); background:linear-gradient(180deg, rgba(255,45,45,.055), rgba(255,255,255,0)), var(--panel); box-shadow:0 22px 80px rgba(255,0,0,.10), var(--shadow); }
+.status-row { display:flex; align-items:center; justify-content:center; flex-wrap:wrap; gap:8px; color:var(--muted); font-size:12px; min-height:20px; }
+.status-dot { width:8px; height:8px; border-radius:99px; background:#666; box-shadow:0 0 0 4px rgba(255,255,255,.02); }
+.status-dot.live { background:#e9e9ea; box-shadow:0 0 0 4px rgba(255,255,255,.08); }
+body.sport-active .status-dot.live { background:var(--sport); box-shadow:0 0 0 4px rgba(255,45,45,.12), 0 0 18px rgba(255,45,45,.5); }
+.divider { color:var(--line); }
+.sport-badge { display:none; padding:4px 8px; border:1px solid rgba(255,70,60,.5); border-radius:999px; color:#ff7168; font-size:9px; font-weight:900; letter-spacing:.16em; background:rgba(255,40,35,.08); }
+body.sport-active .sport-badge { display:inline-flex; }
+
+.speed-stage { min-height:330px; display:grid; place-items:center; position:relative; overflow:hidden; }
+.speed-readout { position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); text-align:center; z-index:3; min-width:280px; }
+.run-kicker { height:18px; opacity:0; transform:translateY(5px); color:#ff5f56; font-size:11px; font-weight:900; letter-spacing:.22em; transition:.25s ease; }
+body.sport-active .run-kicker { opacity:1; transform:none; }
+.speed-value { font-size:clamp(84px, 14vw, 168px); line-height:.82; font-weight:300; letter-spacing:-.075em; font-variant-numeric:tabular-nums; transition:color .25s ease, text-shadow .25s ease; }
+body.sport-active .speed-value { color:#fff; text-shadow:0 0 34px rgba(255,42,31,.22); }
+.speed-unit { margin-top:14px; color:var(--muted); font-size:14px; letter-spacing:.15em; text-transform:uppercase; }
+.gauge { width:min(520px, 82vw); aspect-ratio:2/1; position:absolute; bottom:0; overflow:hidden; }
+.gauge-glow { position:absolute; inset:10% 8% -15%; border-radius:50% 50% 0 0; opacity:0; background:radial-gradient(ellipse at 50% 100%, rgba(255,34,21,.36), transparent 55%); transition:.3s ease; }
+body.sport-active .gauge-glow { opacity:1; animation:gaugePulse 1.7s ease-in-out infinite; }
+@keyframes gaugePulse { 0%,100%{filter:brightness(.85)} 50%{filter:brightness(1.35)} }
+.gauge-arc { width:100%; aspect-ratio:1/1; border-radius:50%; border:3px solid var(--line); position:absolute; top:0; left:0; opacity:.9; transition:border-color .25s ease, box-shadow .25s ease; }
+.gauge-arc::after { content:""; position:absolute; inset:11%; border-radius:50%; border:1px solid rgba(255,255,255,.05); }
+body.sport-active .gauge-arc { border-color:rgba(255,55,45,.42); box-shadow:inset 0 0 28px rgba(255,0,0,.05); }
+.gauge-progress { position:absolute; inset:0; border-radius:50%; opacity:0; pointer-events:none; background:conic-gradient(from 270deg, transparent 0 50%, rgba(255,39,31,.9) 50% 75%, transparent 75% 100%); mask:radial-gradient(circle at center, transparent 0 49%, #000 50% 51%, transparent 52%); transition:opacity .25s ease, transform .12s linear; }
+body.sport-active .gauge-progress { opacity:.95; }
+.needle { position:absolute; width:42%; height:2px; background:var(--text); left:50%; bottom:0; transform-origin:0 50%; transform:rotate(180deg); transition:transform .12s linear, background .25s ease, box-shadow .25s ease; z-index:2; box-shadow:0 0 18px rgba(255,255,255,.25); }
+body.sport-active .needle { height:3px; background:linear-gradient(90deg,#ff2c22,#ff755f); box-shadow:0 0 22px rgba(255,45,34,.9); }
+.gauge-center { width:16px; height:16px; border-radius:50%; background:var(--text); position:absolute; left:50%; bottom:0; transform:translate(-50%,50%); z-index:4; transition:.25s ease; }
+body.sport-active .gauge-center { background:var(--sport); box-shadow:0 0 18px rgba(255,45,45,.8); }
+
+.sport-stopwatch { opacity:0; height:0; overflow:hidden; transform:translateY(8px); display:flex; align-items:baseline; justify-content:center; gap:6px; transition:.25s ease; }
+body.sport-active .sport-stopwatch { opacity:1; height:38px; transform:none; margin-top:7px; }
+.sport-stopwatch span { color:#ff6f66; font-size:10px; font-weight:800; letter-spacing:.12em; }
+.sport-stopwatch strong { font-size:30px; line-height:1; font-weight:450; font-variant-numeric:tabular-nums; letter-spacing:-.04em; }
+.sport-stopwatch small { color:var(--muted); font-size:11px; }
+.sport-result { opacity:0; height:0; color:var(--muted); font-size:9px; font-weight:800; letter-spacing:.14em; transition:.2s ease; }
+body.sport-active .sport-result { opacity:1; height:14px; margin-top:2px; }
+body.sport-active .sport-result.new-best { color:#ff685e; text-shadow:0 0 18px rgba(255,45,45,.45); }
+
+.metric-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:10px; }
+.metric { padding:13px 15px; border-radius:16px; background:var(--panel-2); border:1px solid var(--line); display:flex; flex-direction:column; gap:6px; transition:.25s ease; }
+body.sport-active .metric:first-child { border-color:rgba(255,54,44,.42); background:linear-gradient(145deg,rgba(255,42,32,.08),transparent),var(--panel-2); }
+.metric span, .performance-strip span, .trip-summary span { color:var(--muted); font-size:10px; letter-spacing:.09em; text-transform:uppercase; }
+.metric strong { font-size:16px; font-weight:650; }
+
+.tabs { display:grid; grid-template-columns:repeat(3,1fr); gap:8px; margin:18px 0; padding:6px; border-radius:18px; background:var(--panel); border:1px solid var(--line); }
+.tab { min-height:46px; background:transparent; color:var(--muted); border-radius:13px; font-size:11px; letter-spacing:.07em; font-weight:800; }
+.tab.active { background:var(--panel-2); color:var(--text); box-shadow:inset 0 0 0 1px var(--line); }
+body.sport-active .tab.active { box-shadow:inset 0 0 0 1px rgba(255,59,47,.28); }
+
+.view { display:none; }
+.view.active { display:block; animation:fade .2s ease; }
+@keyframes fade { from {opacity:.25; transform:translateY(4px)} to {opacity:1; transform:none} }
+.section-head { display:flex; justify-content:space-between; align-items:center; gap:18px; margin:26px 2px 14px; }
+h1 { font-size:22px; margin:0 0 4px; letter-spacing:-.02em; }
+h2 { font-size:17px; margin:3px 0 0; letter-spacing:-.01em; }
+p { margin:0; color:var(--muted); font-size:13px; line-height:1.45; }
+.primary { min-height:44px; padding:0 20px; border-radius:13px; background:var(--accent); color:var(--accent-text); font-weight:800; font-size:11px; letter-spacing:.06em; white-space:nowrap; transition:.2s ease; }
+body.sport-active .primary { background:linear-gradient(135deg,#ff3a2e,#b20000); color:#fff; box-shadow:0 10px 28px rgba(255,25,18,.16); }
+.secondary { min-height:42px; padding:0 17px; border-radius:13px; background:var(--panel-2); border:1px solid var(--line); color:var(--text); font-weight:700; font-size:11px; letter-spacing:.045em; }
+.secondary.danger { color:var(--muted); }
+.wide { width:100%; margin-top:10px; }
+
+.mode-grid { display:grid; grid-template-columns:repeat(5,1fr); gap:10px; }
+.mode-card { min-height:130px; border:1px solid var(--line); border-radius:18px; background:var(--panel); padding:18px; text-align:left; display:flex; flex-direction:column; justify-content:flex-end; gap:4px; transition:transform .15s ease, background .15s ease, border-color .15s ease, box-shadow .15s ease; }
+.mode-card:active { transform:scale(.985); }
+.mode-card.selected { background:var(--accent); color:var(--accent-text); }
+.mode-card.sport-card { background:linear-gradient(150deg,rgba(255,49,38,.08),rgba(255,49,38,0) 55%),var(--panel); }
+.mode-card.sport-card .mode-icon { color:#ff5045; }
+.mode-card.sport-card.selected { color:#fff; background:linear-gradient(145deg,#3e0a08,#9e0903 68%,#ff3d2f); border-color:rgba(255,88,73,.66); box-shadow:0 14px 38px rgba(255,20,12,.18); }
+.mode-icon { margin-bottom:auto; font-size:21px; font-weight:800; letter-spacing:-.08em; }
+.mode-name { font-size:13px; font-weight:850; letter-spacing:.06em; }
+.mode-sub { font-size:11px; color:var(--muted); }
+.mode-card.selected .mode-sub { color:var(--soft); }
+.mode-card.sport-card.selected .mode-sub { color:rgba(255,255,255,.66); }
+
+.controls-card { margin-top:10px; padding:18px; display:grid; grid-template-columns:repeat(3,1fr); gap:18px; }
+.controls-card label { display:grid; grid-template-columns:1fr auto; gap:8px; color:var(--muted); font-size:12px; }
+.controls-card output { color:var(--text); font-variant-numeric:tabular-nums; }
+.controls-card input { grid-column:1/-1; width:100%; accent-color:var(--text); }
+body.sport-active .controls-card input { accent-color:var(--sport); }
+
+.sport-settings { margin-top:10px; padding:18px; opacity:.68; transition:.25s ease; }
+body.sport-active .sport-settings { opacity:1; border-color:rgba(255,56,44,.35); box-shadow:0 18px 55px rgba(255,0,0,.06),var(--shadow); }
+.sport-settings-head { display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:16px; }
+.eyebrow { color:#ff5a50; font-size:9px; font-weight:900; letter-spacing:.2em; }
+.setting-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:10px; }
+.select-wrap { display:flex; flex-direction:column; gap:7px; padding:13px; border:1px solid var(--line); background:var(--panel-2); border-radius:14px; }
+.select-wrap span { color:var(--muted); font-size:10px; letter-spacing:.08em; text-transform:uppercase; }
+.select-wrap select { width:100%; border:0; outline:0; background:transparent; color:var(--text); font-weight:700; }
+.select-wrap option { background:#17191c; color:#fff; }
+.toggle-row { display:flex; gap:16px; flex-wrap:wrap; margin-top:14px; }
+.switch-label { display:flex; align-items:center; gap:8px; color:var(--muted); font-size:11px; cursor:pointer; }
+.switch-label input { position:absolute; opacity:0; pointer-events:none; }
+.switch { width:34px; height:20px; border-radius:999px; background:var(--line); position:relative; transition:.2s ease; }
+.switch::after { content:""; width:14px; height:14px; border-radius:50%; background:#fff; position:absolute; top:3px; left:3px; transition:.2s ease; }
+.switch-label input:checked + .switch { background:#676b70; }
+body.sport-active .switch-label input:checked + .switch { background:#d8241c; }
+.switch-label input:checked + .switch::after { transform:translateX(14px); }
+.voice-note { margin-top:12px; font-size:11px; }
+
+.run-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:10px; }
+.run-card { min-height:145px; border-radius:18px; background:var(--panel); border:1px solid var(--line); padding:18px; display:flex; flex-direction:column; justify-content:space-between; }
+.run-card span { font-size:11px; color:var(--muted); letter-spacing:.08em; }
+.run-card strong { font-size:44px; font-weight:320; letter-spacing:-.045em; font-variant-numeric:tabular-nums; }
+.run-card small { color:var(--muted); }
+.run-card.featured { box-shadow:inset 0 0 0 1px rgba(255,255,255,.06); }
+body.sport-active .run-card.featured { border-color:rgba(255,56,44,.44); box-shadow:inset 0 0 0 1px rgba(255,56,44,.12),0 0 34px rgba(255,0,0,.05); }
+.performance-strip { display:grid; grid-template-columns:repeat(3,1fr); gap:10px; margin-top:10px; }
+.performance-strip div { background:var(--panel-2); border:1px solid var(--line); border-radius:15px; padding:14px 16px; }
+.performance-strip strong { display:block; margin-top:5px; font-size:15px; }
+
+.trip-summary { display:grid; grid-template-columns:repeat(4,1fr); gap:10px; }
+.trip-summary > div { border:1px solid var(--line); background:var(--panel); border-radius:16px; padding:15px; }
+.trip-summary strong { display:block; font-size:20px; margin-top:5px; font-weight:500; }
+.chart-card { margin-top:10px; height:300px; padding:12px; position:relative; overflow:hidden; }
+#tripCanvas { width:100%; height:100%; display:block; }
+.empty-chart { position:absolute; inset:0; display:grid; place-items:center; color:var(--muted); font-size:13px; pointer-events:none; }
+.trip-actions { display:flex; gap:8px; margin-top:10px; }
+
+.permission-card { margin-top:22px; padding:17px 18px; display:flex; align-items:center; justify-content:space-between; gap:16px; }
+.permission-card strong { font-size:13px; }
+.permission-card p { margin-top:3px; max-width:720px; font-size:12px; }
+footer { text-align:center; color:var(--soft); font-size:10px; padding-top:24px; letter-spacing:.03em; }
+
+@media (max-width: 980px) {
+  .mode-grid { grid-template-columns:repeat(3,1fr); }
+}
+@media (max-width: 820px) {
+  .app-shell { width:min(100% - 20px, 720px); padding-top:14px; }
+  .version { display:none; }
+  .speed-stage { min-height:285px; }
+  .metric-grid, .run-grid, .trip-summary { grid-template-columns:repeat(2,1fr); }
+  .mode-grid { grid-template-columns:repeat(2,1fr); }
+  .controls-card, .setting-grid { grid-template-columns:1fr; }
+}
+@media (max-width: 520px) {
+  .topbar { align-items:flex-start; }
+  .brand { font-size:15px; }
+  .hero-card { padding:14px 12px 14px; }
+  .speed-stage { min-height:255px; }
+  .speed-readout { min-width:230px; }
+  .speed-value { font-size:92px; }
+  body.sport-active .sport-stopwatch { height:32px; }
+  .sport-stopwatch strong { font-size:25px; }
+  .metric { padding:11px; }
+  .metric strong { font-size:14px; }
+  .tabs { position:sticky; top:8px; z-index:20; backdrop-filter:blur(16px); }
+  .tab { font-size:9px; padding:0 5px; }
+  .section-head { align-items:flex-start; }
+  .section-head p { max-width:240px; }
+  .mode-card { min-height:115px; padding:14px; }
+  .run-card { min-height:125px; padding:14px; }
+  .run-card strong { font-size:36px; }
+  .performance-strip { grid-template-columns:1fr; }
+  .trip-actions { display:grid; grid-template-columns:1fr 1fr; }
+  .trip-actions .danger { grid-column:1/-1; }
+  .permission-card { align-items:flex-start; flex-direction:column; }
+  .permission-card button { width:100%; }
+  .toggle-row { flex-direction:column; gap:12px; }
+}
+
+  </style>
 </head>
 <body>
-<div class="app">
+  <div class="sport-flash" id="sportFlash" aria-hidden="true"></div>
 
-<header class="topbar">
-  <div class="brand">
-    <img src="evds-logo.svg?v=11.0" class="brand-logo" alt="EVDriveSound">
-    <div class="brandtext">EVDriveSound <span class="version">V11</span></div>
+  <div class="app-shell">
+    <header class="topbar">
+      <div class="brand-wrap">
+        <div class="brand-mark" aria-hidden="true">E</div>
+        <div>
+          <div class="brand">EVDRIVE</div>
+          <div class="version">V12.1 · SPORT EXPERIENCE</div>
+        </div>
+      </div>
+      <div class="top-actions">
+        <button class="icon-btn" id="themeToggle" title="Toggle theme" aria-label="Toggle theme">◐</button>
+        <button class="pill" id="demoToggle">DEMO OFF</button>
+      </div>
+    </header>
+
+    <main>
+      <section class="hero-card" id="heroCard">
+        <div class="status-row">
+          <span class="status-dot" id="statusDot"></span>
+          <span id="sensorStatus">Sensors idle</span>
+          <span class="divider">·</span>
+          <span id="gpsAccuracy">GPS —</span>
+          <span class="sport-badge" id="sportBadge">SPORT</span>
+        </div>
+
+        <div class="speed-stage">
+          <div class="gauge" aria-hidden="true">
+            <div class="gauge-glow"></div>
+            <div class="gauge-arc"></div>
+            <div class="gauge-progress" id="gaugeProgress"></div>
+            <div class="needle" id="needle"></div>
+            <div class="gauge-center"></div>
+          </div>
+
+          <div class="speed-readout">
+            <div class="run-kicker" id="sportRunKicker">READY</div>
+            <div id="speedValue" class="speed-value">0</div>
+            <div class="speed-unit">km/h</div>
+            <div class="sport-stopwatch" id="sportStopwatch">
+              <span>0–100</span>
+              <strong id="sportTimer">0.00</strong>
+              <small>s</small>
+            </div>
+            <div class="sport-result" id="sportResult">BEST —</div>
+          </div>
+        </div>
+
+        <div class="metric-grid">
+          <div class="metric"><span>Acceleration</span><strong id="accelValue">0.00 g</strong></div>
+          <div class="metric"><span>Trip</span><strong id="distanceValue">0.00 km</strong></div>
+          <div class="metric"><span>Top speed</span><strong id="topSpeedValue">0 km/h</strong></div>
+          <div class="metric"><span>Drive time</span><strong id="driveTimeValue">00:00</strong></div>
+        </div>
+      </section>
+
+      <nav class="tabs" aria-label="EVDRIVE apps">
+        <button class="tab active" data-view="modes">DRIVE MODES</button>
+        <button class="tab" data-view="performance">PERFORMANCE</button>
+        <button class="tab" data-view="trips">TRIP REPLAY</button>
+      </nav>
+
+      <section class="view active" id="view-modes">
+        <div class="section-head">
+          <div>
+            <h1>Drive Modes</h1>
+            <p>Reactive cabin sound, visual feedback and voice reactions.</p>
+          </div>
+          <button class="primary" id="audioStart">START SOUND</button>
+        </div>
+
+        <div class="mode-grid" id="modeGrid">
+          <button class="mode-card sport-card" data-mode="sport">
+            <span class="mode-icon">S</span><span class="mode-name">SPORT EXPERIENCE</span><span class="mode-sub">voice · red HUD · auto 0–100</span>
+          </button>
+          <button class="mode-card selected" data-mode="cyber">
+            <span class="mode-icon">◈</span><span class="mode-name">CYBER EV</span><span class="mode-sub">clean electric turbine</span>
+          </button>
+          <button class="mode-card" data-mode="pod">
+            <span class="mode-icon">⟫</span><span class="mode-name">POD RACER</span><span class="mode-sub">aggressive dual-engine pulse</span>
+          </button>
+          <button class="mode-card" data-mode="v10">
+            <span class="mode-icon">V10</span><span class="mode-name">V10 SYNTH</span><span class="mode-sub">high-rev combustion-inspired</span>
+          </button>
+          <button class="mode-card" data-mode="warp">
+            <span class="mode-icon">✦</span><span class="mode-name">WARP</span><span class="mode-sub">smooth sci-fi acceleration</span>
+          </button>
+        </div>
+
+        <div class="controls-card">
+          <label>Master volume <output id="volumeOut">55%</output><input id="volume" type="range" min="0" max="100" value="55"></label>
+          <label>Response <output id="responseOut">85%</output><input id="response" type="range" min="10" max="100" value="85"></label>
+          <label>Engine character <output id="characterOut">60%</output><input id="character" type="range" min="0" max="100" value="60"></label>
+        </div>
+
+        <div class="sport-settings" id="sportSettings">
+          <div class="sport-settings-head">
+            <div>
+              <span class="eyebrow">SPORT VOICE</span>
+              <h2>Character feedback</h2>
+            </div>
+            <button class="secondary" id="previewVoice">PREVIEW</button>
+          </div>
+
+          <div class="setting-grid">
+            <label class="select-wrap">
+              <span>Language</span>
+              <select id="voiceLanguage">
+                <option value="en">English</option>
+                <option value="de">Deutsch</option>
+              </select>
+            </label>
+            <label class="select-wrap">
+              <span>Voice character</span>
+              <select id="voiceCharacter">
+                <option value="devil">Devil</option>
+                <option value="assistant">Digital Assistant</option>
+                <option value="female">Female Performance</option>
+              </select>
+            </label>
+            <label class="select-wrap">
+              <span>Reaction intensity</span>
+              <select id="reactionIntensity">
+                <option value="low">Low</option>
+                <option value="medium" selected>Medium</option>
+                <option value="high">High</option>
+              </select>
+            </label>
+          </div>
+
+          <div class="toggle-row">
+            <label class="switch-label"><input type="checkbox" id="voiceEnabled" checked><span class="switch"></span><span>Voice feedback</span></label>
+            <label class="switch-label"><input type="checkbox" id="autoArm" checked><span class="switch"></span><span>Auto-arm 0–100</span></label>
+            <label class="switch-label"><input type="checkbox" id="announceTime" checked><span class="switch"></span><span>Announce result</span></label>
+          </div>
+
+          <p class="voice-note" id="voiceNote">Uses voices available in your browser/device. Voice character is created with pitch/rate processing and will vary by platform.</p>
+        </div>
+      </section>
+
+      <section class="view" id="view-performance">
+        <div class="section-head">
+          <div>
+            <h1>Performance HUD</h1>
+            <p>GPS-based acceleration timing. Use only where safe and legal.</p>
+          </div>
+          <button class="primary" id="armRun">ARM RUN</button>
+        </div>
+
+        <div class="run-grid">
+          <div class="run-card"><span>0–50</span><strong id="run050">—</strong><small>seconds</small></div>
+          <div class="run-card featured"><span>0–100</span><strong id="run0100">—</strong><small>seconds</small></div>
+          <div class="run-card"><span>100–200</span><strong id="run100200">—</strong><small>seconds</small></div>
+          <div class="run-card"><span>Max G</span><strong id="maxG">0.00</strong><small>g</small></div>
+        </div>
+
+        <div class="performance-strip">
+          <div><span>STATE</span><strong id="runState">IDLE</strong></div>
+          <div><span>START SPEED</span><strong id="startSpeed">0 km/h</strong></div>
+          <div><span>LIVE</span><strong id="liveTimer">0.00 s</strong></div>
+        </div>
+        <button class="secondary wide" id="resetRun">RESET PERFORMANCE</button>
+      </section>
+
+      <section class="view" id="view-trips">
+        <div class="section-head">
+          <div>
+            <h1>Trip Replay</h1>
+            <p>Record a drive locally in your browser and replay the speed trace.</p>
+          </div>
+          <button class="primary" id="recordTrip">START TRIP</button>
+        </div>
+
+        <div class="trip-summary">
+          <div><span>Distance</span><strong id="tripDistance">0.00 km</strong></div>
+          <div><span>Duration</span><strong id="tripDuration">00:00</strong></div>
+          <div><span>Average</span><strong id="tripAverage">0 km/h</strong></div>
+          <div><span>Maximum</span><strong id="tripMax">0 km/h</strong></div>
+        </div>
+
+        <div class="chart-card">
+          <canvas id="tripCanvas" width="1200" height="360"></canvas>
+          <div class="empty-chart" id="emptyChart">Start a trip to create a speed replay.</div>
+        </div>
+
+        <div class="trip-actions">
+          <button class="secondary" id="saveTrip">SAVE SNAPSHOT</button>
+          <button class="secondary" id="loadTrip">LOAD LAST</button>
+          <button class="secondary danger" id="clearTrip">CLEAR</button>
+        </div>
+      </section>
+
+      <section class="permission-card">
+        <div>
+          <strong>Vehicle input</strong>
+          <p>Uses browser geolocation and, when available, device motion. This prototype does not change the Tesla vehicle drive mode.</p>
+        </div>
+        <button class="secondary" id="enableSensors">ENABLE SENSORS</button>
+      </section>
+    </main>
+
+    <footer>EVDRIVE V12.1 · Experimental prototype · Keep your attention on the road.</footer>
   </div>
 
-  <div class="top-actions">
-    <button id="themeToggle" class="theme-toggle" aria-label="Switch color mode">
-      <span id="themeIcon">☀</span>
-      <span id="themeLabel">DAY</span>
-    </button>
-    <div class="gps-status">
-      <span id="gpsDot" class="gps-dot"></span>
-      <span id="gpsText">GPS NOT CONNECTED</span>
-    </div>
-  </div>
-</header>
+  <script>
+(() => {
+  'use strict';
 
-<main class="main">
+  const $ = (id) => document.getElementById(id);
+  const clamp = (n, min, max) => Math.max(min, Math.min(max, n));
+  const fmtTime = (seconds) => {
+    const s = Math.max(0, Math.floor(seconds));
+    const m = Math.floor(s / 60);
+    return `${String(m).padStart(2,'0')}:${String(s % 60).padStart(2,'0')}`;
+  };
 
-<section class="card speed-card">
+  const initialVoiceSettings = (() => {
+    try { return JSON.parse(localStorage.getItem('evdrive-v12-voice') || '{}'); }
+    catch { return {}; }
+  })();
 
-  <div class="speedometer-wrap">
-    <svg id="speedometer" class="speedometer" viewBox="0 0 700 420" aria-label="Speedometer">
-      <defs>
-        <filter id="softGlow" x="-40%" y="-40%" width="180%" height="180%">
-          <feGaussianBlur stdDeviation="3" result="blur"/>
-          <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
-        </filter>
-      </defs>
+  const state = {
+    speed: 0,
+    prevSpeed: 0,
+    accelG: 0,
+    maxG: 0,
+    topSpeed: 0,
+    distanceKm: 0,
+    lastGps: null,
+    driveStart: null,
+    demo: false,
+    demoPhase: 0,
+    sensorEnabled: false,
+    watchId: null,
+    lastSpeedTs: performance.now(),
+    selectedMode: 'cyber',
+    lastNonSportMode: 'cyber',
+    sportActive: false,
+    audioOn: false,
+    tripRecording: false,
+    tripStart: null,
+    tripSamples: [],
+    lastReactionTs: 0,
+    reactionStage: 0,
+    lastSportResult: null,
+    best0100: Number(localStorage.getItem('evdrive-best-0100') || 0) || null,
+    run: {
+      armed: false,
+      active: false,
+      startTs: 0,
+      t050: null,
+      t0100: null,
+      t100Start: null,
+      t100200: null,
+      sportRun: false
+    },
+    voice: {
+      language: initialVoiceSettings.language || 'en',
+      character: initialVoiceSettings.character || 'devil',
+      intensity: initialVoiceSettings.intensity || 'medium',
+      enabled: initialVoiceSettings.enabled !== false,
+      autoArm: initialVoiceSettings.autoArm !== false,
+      announceTime: initialVoiceSettings.announceTime !== false
+    }
+  };
 
-      <path id="arcTrack"
-            d="M 95 345 A 255 255 0 0 1 605 345"
-            fill="none"
-            class="arc-track"/>
+  // ---------- UI ----------
+  const speedValue = $('speedValue');
+  const accelValue = $('accelValue');
+  const topSpeedValue = $('topSpeedValue');
+  const distanceValue = $('distanceValue');
+  const driveTimeValue = $('driveTimeValue');
+  const needle = $('needle');
+  const sensorStatus = $('sensorStatus');
+  const gpsAccuracy = $('gpsAccuracy');
+  const statusDot = $('statusDot');
 
-      <g id="ledSegments"></g>
-      <g id="speedLabels"></g>
+  function saveVoiceSettings() {
+    localStorage.setItem('evdrive-v12-voice', JSON.stringify(state.voice));
+  }
 
-      <g id="needleGroup">
-        <line id="needle" x1="350" y1="345" x2="350" y2="105" class="needle"/>
-        <circle cx="350" cy="345" r="13" class="needle-hub"/>
-      </g>
-    </svg>
+  function updateBestLabel(isNewBest = false) {
+    const el = $('sportResult');
+    el.classList.toggle('new-best', isNewBest);
+    if (state.lastSportResult !== null) {
+      const bestPart = state.best0100 ? ` · BEST ${state.best0100.toFixed(2)} s` : '';
+      el.textContent = `${isNewBest ? 'NEW BEST' : 'LAST'} ${state.lastSportResult.toFixed(2)} s${bestPart}`;
+    } else {
+      el.textContent = state.best0100 ? `BEST ${state.best0100.toFixed(2)} s` : 'BEST —';
+    }
+  }
+  updateBestLabel();
 
-    <div class="speed-center">
-      <div id="profileIcon" class="profile-icon">✦</div>
-      <div id="profileName" class="profile-name">CYBER PULSE</div>
-      <div id="speed" class="speed-value">0</div>
-      <div class="speed-unit">km/h</div>
-      <div id="driveMode" class="drive-mode">READY</div>
-    </div>
-  </div>
+  document.querySelectorAll('.tab').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.tab').forEach(x => x.classList.remove('active'));
+      document.querySelectorAll('.view').forEach(x => x.classList.remove('active'));
+      btn.classList.add('active');
+      $(`view-${btn.dataset.view}`).classList.add('active');
+      if (btn.dataset.view === 'trips') drawTrip();
+    });
+  });
 
-  <div class="speed-controls">
-    <div class="volume-block">
-      <div class="vol-icon">◀)</div>
-      <input id="volume" type="range" min="0" max="100" value="78">
-      <div id="volPercent" class="vol-percent">78%</div>
-    </div>
+  $('themeToggle').addEventListener('click', () => {
+    document.body.classList.toggle('light');
+    localStorage.setItem('evdrive-theme', document.body.classList.contains('light') ? 'light' : 'dark');
+    drawTrip();
+  });
+  if (localStorage.getItem('evdrive-theme') === 'light') document.body.classList.add('light');
 
-    <button id="testBtn" class="action-btn">SOUND TEST</button>
-    <button id="startBtn" class="action-btn primary">START SOUND</button>
-  </div>
+  $('demoToggle').addEventListener('click', () => {
+    state.demo = !state.demo;
+    state.demoPhase = 0;
+    $('demoToggle').textContent = state.demo ? 'DEMO ON' : 'DEMO OFF';
+    $('demoToggle').classList.toggle('on', state.demo);
+    if (state.demo) {
+      sensorStatus.textContent = 'Demo signal active';
+      statusDot.classList.add('live');
+      if (!state.driveStart) state.driveStart = performance.now();
+    } else {
+      sensorStatus.textContent = state.sensorEnabled ? 'Sensors active' : 'Sensors idle';
+    }
+  });
 
-</section>
+  document.querySelectorAll('.mode-card').forEach(card => {
+    card.addEventListener('click', () => {
+      const mode = card.dataset.mode;
+      document.querySelectorAll('.mode-card').forEach(x => x.classList.remove('selected'));
+      card.classList.add('selected');
+      if (mode === 'sport') {
+        activateSport();
+      } else {
+        state.lastNonSportMode = mode;
+        state.selectedMode = mode;
+        deactivateSport();
+      }
+      audioEngine.update(true);
+    });
+  });
 
-<section class="card side-card">
+  [['volume','volumeOut'], ['response','responseOut'], ['character','characterOut']].forEach(([input, output]) => {
+    $(input).addEventListener('input', () => {
+      $(output).value = `${$(input).value}%`;
+      audioEngine.update(true);
+    });
+  });
 
-  <div class="sound-panel">
-    <div class="panel-title">SOUND PROFILE</div>
+  // ---------- SPORT EXPERIENCE ----------
+  function flashSport() {
+    const flash = $('sportFlash');
+    flash.classList.remove('fire');
+    void flash.offsetWidth;
+    flash.classList.add('fire');
+  }
 
-    <div class="sound-list">
-      <button class="sound-btn active" data-p="cyber" data-icon="✦">
-        <span class="sound-icon">✦</span><span class="sound-name">CYBER PULSE</span><span class="radio"></span>
-      </button>
+  function activateSport() {
+    const firstActivation = !state.sportActive;
+    state.sportActive = true;
+    state.selectedMode = 'sport';
+    state.lastReactionTs = 0;
+    state.reactionStage = 0;
+    document.body.classList.add('sport-active');
+    $('sportRunKicker').textContent = state.speed < 2 ? 'READY' : 'SPORT ACTIVE';
+    flashSport();
 
-      <button class="sound-btn" data-p="pod" data-icon="◉">
-        <span class="sound-icon">◉</span><span class="sound-name">POD RACER</span><span class="radio"></span>
-      </button>
+    if (state.voice.autoArm) armPerformance(true);
+    if (firstActivation) {
+      unlockAudio();
+      speakKey('activated', { interrupt: true });
+    }
+  }
 
-      <button class="sound-btn" data-p="hyper" data-icon="⇈">
-        <span class="sound-icon">⇈</span><span class="sound-name">HYPERDRIVE</span><span class="radio"></span>
-      </button>
+  function deactivateSport() {
+    if (!state.sportActive) return;
+    state.sportActive = false;
+    document.body.classList.remove('sport-active');
+    $('sportRunKicker').textContent = 'READY';
+    $('sportTimer').textContent = '0.00';
+    speechSynthesis?.cancel?.();
+  }
 
-      <button class="sound-btn" data-p="turbine" data-icon="✺">
-        <span class="sound-icon">✺</span><span class="sound-name">TURBINE X</span><span class="radio"></span>
-      </button>
+  function unlockAudio() {
+    try {
+      if (!audioEngine.ctx) audioEngine.build();
+      audioEngine.ctx?.resume?.();
+    } catch {}
+  }
 
-      <button class="sound-btn" data-p="ion" data-icon="ϟ">
-        <span class="sound-icon">ϟ</span><span class="sound-name">ION STORM</span><span class="radio"></span>
-      </button>
+  const phrases = {
+    en: {
+      activated: 'Sport mode activated.',
+      ready: 'Ready.',
+      go: 'Go!',
+      reaction1: ['Come on!', 'Push!', 'Yes!'],
+      reaction2: ['Full power!', 'That is it!', 'Keep pushing!'],
+      reaction3: ['Maximum attack!', 'Yes! Full power!', 'Unleash it!'],
+      completed: (spokenTime) => `One hundred. ${spokenTime} seconds.`,
+      newBest: 'New personal best.'
+    },
+    de: {
+      activated: 'Sportmodus aktiviert.',
+      ready: 'Bereit.',
+      go: 'Los!',
+      reaction1: ['Komm!', 'Weiter!', 'Ja!'],
+      reaction2: ['Volle Leistung!', 'Genau so!', 'Weiter drücken!'],
+      reaction3: ['Maximale Attacke!', 'Ja! Volle Leistung!', 'Alles raus!'],
+      completed: (spokenTime) => `Hundert. ${spokenTime} Sekunden.`,
+      newBest: 'Neue Bestzeit.'
+    }
+  };
 
-      <button class="sound-btn" data-p="phantom" data-icon="◉">
-        <span class="sound-icon">◉</span><span class="sound-name">PHANTOM TORQUE</span><span class="radio"></span>
-      </button>
+  let availableVoices = [];
 
-      <button class="sound-btn" data-p="arc" data-icon="⌁">
-        <span class="sound-icon">⌁</span><span class="sound-name">ARC DRIVE</span><span class="radio"></span>
-      </button>
+  function refreshVoices() {
+    availableVoices = window.speechSynthesis?.getVoices?.() || [];
+    return availableVoices;
+  }
 
-      <button class="sound-btn" data-p="zen" data-icon="○">
-        <span class="sound-icon">○</span><span class="sound-name">ZEN EV</span><span class="radio"></span>
-      </button>
-    </div>
-  </div>
+  function chooseVoice(lang, character) {
+    const voices = availableVoices.length ? availableVoices : refreshVoices();
+    if (!voices.length) return null;
 
-  <div class="donate">
-    <img src="paypal-qr.png" alt="PayPal donation QR">
-    <div class="donate-copy">
-      <div class="donate-title">SUPPORT EVDRIVESOUND</div>
-      <div class="donate-text">Scan the QR code to support development.</div>
-    </div>
-  </div>
+    const langPrefix = lang === 'de' ? 'de' : 'en';
+    const matching = voices.filter(v => (v.lang || '').toLowerCase().startsWith(langPrefix));
+    const pool = matching.length ? matching : voices;
 
-</section>
+    // Apple/Safari and iOS expose different voice names depending on installed voices.
+    // Prefer known German female voices explicitly before using a generic fallback.
+    const germanFemaleHints = /anna|petra|katja|marlene|helena|vicki|female|weiblich|siri/i;
+    const englishFemaleHints = /samantha|victoria|karen|moira|ava|allison|female|siri/i;
+    const genericFemaleHints = /female|woman|girl|samantha|victoria|karen|moira|ava|allison|anna|petra|katja|marlene|helena|vicki|siri/i;
+    const maleHints = /male|daniel|alex|fred|thomas|markus|yannick|martin/i;
 
-</main>
+    if (character === 'female') {
+      const languageHints = lang === 'de' ? germanFemaleHints : englishFemaleHints;
+      return pool.find(v => languageHints.test(v.name))
+        || pool.find(v => genericFemaleHints.test(v.name))
+        || voices.find(v => genericFemaleHints.test(v.name))
+        || pool[0];
+    }
+    if (character === 'devil') return pool.find(v => maleHints.test(v.name)) || pool[pool.length - 1] || pool[0];
+    return pool.find(v => genericFemaleHints.test(v.name)) || pool[0];
+  }
 
-<footer class="bottom">
-  <div class="utility">
-    <div class="u-icon">⌖</div>
-    <div>
-      <button id="gpsToggle">ENABLE GPS</button>
-      <div id="gpsFooter" class="u-sub">Inactive</div>
-    </div>
-  </div>
+  function voiceParams(character) {
+    if (character === 'devil') return { pitch: 0.55, rate: 0.84, volume: 1.0 };
+    // A slightly stronger pitch lift also gives a female character on platforms
+    // where Safari exposes only one German system voice.
+    if (character === 'female') return { pitch: 1.34, rate: 1.04, volume: 1.0 };
+    return { pitch: 1.03, rate: 0.96, volume: 0.96 };
+  }
 
-  <div class="utility">
-    <div class="u-icon">◎</div>
-    <div>
-      <div class="u-main">TESLA GPS</div>
-      <div class="u-sub">Processed locally only</div>
-    </div>
-  </div>
+  function speak(text, options = {}) {
+    if (!state.voice.enabled || !('speechSynthesis' in window) || !text) return;
+    if (options.interrupt) speechSynthesis.cancel();
+    const u = new SpeechSynthesisUtterance(text);
+    const p = voiceParams(state.voice.character);
+    u.lang = state.voice.language === 'de' ? 'de-DE' : 'en-US';
+    u.pitch = p.pitch;
+    u.rate = p.rate;
+    u.volume = p.volume;
+    const v = chooseVoice(state.voice.language, state.voice.character);
+    if (v) u.voice = v;
+    speechSynthesis.speak(u);
+  }
 
-  <div class="utility">
-    <div class="u-icon">↻</div>
-    <div>
-      <button id="refreshBtn">REFRESH</button>
-      <div class="u-sub">Reload page</div>
-    </div>
-  </div>
+  function speakKey(key, options = {}) {
+    const dict = phrases[state.voice.language];
+    const val = dict[key];
+    if (typeof val === 'string') speak(val, options);
+  }
 
-  <div class="utility footer-note">
-    EVDriveSound V11 · Tesla Driving View
-  </div>
-</footer>
+  function randomFrom(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
 
-</div>
-<script src="app.min.js?v=11.0" defer></script>
+  function maybeReactToAcceleration(now) {
+    if (!state.sportActive || !state.voice.enabled || state.speed < 7) return;
+    if (state.run.active && state.speed > 92) return; // leave room for result announcement
+
+    const intensity = state.voice.intensity;
+    const thresholds = intensity === 'high'
+      ? { mild:.20, strong:.33, extreme:.50, cooldown:1600 }
+      : intensity === 'low'
+        ? { mild:.34, strong:.48, extreme:.66, cooldown:3600 }
+        : { mild:.27, strong:.40, extreme:.58, cooldown:2500 };
+
+    if ((now - state.lastReactionTs) < thresholds.cooldown) return;
+
+    let bucket = null;
+    if (state.accelG >= thresholds.extreme) bucket = 'reaction3';
+    else if (state.accelG >= thresholds.strong) bucket = 'reaction2';
+    else if (state.accelG >= thresholds.mild) bucket = 'reaction1';
+    if (!bucket) return;
+
+    const dict = phrases[state.voice.language];
+    speak(randomFrom(dict[bucket]));
+    state.lastReactionTs = now;
+  }
+
+  function decimalForSpeech(time) {
+    const fixed = time.toFixed(2);
+    const [whole, decimals] = fixed.split('.');
+    if (state.voice.language === 'de') return `${whole} Komma ${decimals.split('').join(' ')}`;
+    return `${whole} point ${decimals.split('').join(' ')}`;
+  }
+
+  function announce0100(time, isNewBest) {
+    if (!state.voice.enabled || !state.voice.announceTime) return;
+    const dict = phrases[state.voice.language];
+    const spoken = decimalForSpeech(time);
+    speak(dict.completed(spoken), { interrupt: true });
+    if (isNewBest) setTimeout(() => speak(dict.newBest), 1200);
+  }
+
+  function updateSportSettingsUI() {
+    $('voiceLanguage').value = state.voice.language;
+    $('voiceCharacter').value = state.voice.character;
+    $('reactionIntensity').value = state.voice.intensity;
+    $('voiceEnabled').checked = state.voice.enabled;
+    $('autoArm').checked = state.voice.autoArm;
+    $('announceTime').checked = state.voice.announceTime;
+  }
+  updateSportSettingsUI();
+
+  $('voiceLanguage').addEventListener('change', e => { state.voice.language = e.target.value; saveVoiceSettings(); });
+  $('voiceCharacter').addEventListener('change', e => { state.voice.character = e.target.value; saveVoiceSettings(); });
+  $('reactionIntensity').addEventListener('change', e => { state.voice.intensity = e.target.value; saveVoiceSettings(); });
+  $('voiceEnabled').addEventListener('change', e => { state.voice.enabled = e.target.checked; saveVoiceSettings(); });
+  $('autoArm').addEventListener('change', e => { state.voice.autoArm = e.target.checked; saveVoiceSettings(); });
+  $('announceTime').addEventListener('change', e => { state.voice.announceTime = e.target.checked; saveVoiceSettings(); });
+  $('previewVoice').addEventListener('click', () => {
+    unlockAudio();
+    speakKey('activated', { interrupt: true });
+  });
+
+  // Populate / refresh available platform voices.
+  if ('speechSynthesis' in window) {
+    refreshVoices();
+    speechSynthesis.onvoiceschanged = refreshVoices;
+  }
+
+  // ---------- Sensors ----------
+  async function enableSensors() {
+    try {
+      if (typeof DeviceMotionEvent !== 'undefined' && typeof DeviceMotionEvent.requestPermission === 'function') {
+        const result = await DeviceMotionEvent.requestPermission();
+        if (result === 'granted') window.addEventListener('devicemotion', onMotion, { passive: true });
+      } else if ('DeviceMotionEvent' in window) {
+        window.addEventListener('devicemotion', onMotion, { passive: true });
+      }
+
+      if ('geolocation' in navigator) {
+        if (state.watchId !== null) navigator.geolocation.clearWatch(state.watchId);
+        state.watchId = navigator.geolocation.watchPosition(onPosition, onGeoError, {
+          enableHighAccuracy: true,
+          maximumAge: 120,
+          timeout: 10000
+        });
+      } else {
+        throw new Error('Geolocation not available');
+      }
+
+      state.sensorEnabled = true;
+      sensorStatus.textContent = 'Sensors active';
+      statusDot.classList.add('live');
+      $('enableSensors').textContent = 'SENSORS ENABLED';
+    } catch (err) {
+      sensorStatus.textContent = 'Sensor permission unavailable';
+      console.warn(err);
+    }
+  }
+
+  function onGeoError(err) {
+    gpsAccuracy.textContent = 'GPS unavailable';
+    sensorStatus.textContent = err?.message || 'GPS error';
+  }
+
+  function onMotion(e) {
+    const a = e.acceleration || e.accelerationIncludingGravity;
+    if (!a) return;
+    const raw = Math.max(Math.abs(a.x || 0), Math.abs(a.y || 0)) / 9.80665;
+    const candidate = clamp(raw, 0, 1.5);
+    state.accelG = state.accelG * 0.72 + candidate * 0.28;
+    state.maxG = Math.max(state.maxG, state.accelG);
+  }
+
+  function onPosition(pos) {
+    const now = performance.now();
+    const coords = pos.coords;
+    const speedMs = typeof coords.speed === 'number' && coords.speed >= 0 ? coords.speed : null;
+    const nextSpeed = speedMs !== null ? speedMs * 3.6 : estimateSpeedFromPosition(coords, pos.timestamp);
+
+    if (nextSpeed !== null && Number.isFinite(nextSpeed)) setSpeed(clamp(nextSpeed, 0, 320), now);
+
+    if (state.lastGps) {
+      const meters = haversine(state.lastGps.lat, state.lastGps.lon, coords.latitude, coords.longitude);
+      if (meters < 150) state.distanceKm += meters / 1000;
+    }
+    state.lastGps = { lat: coords.latitude, lon: coords.longitude, ts: pos.timestamp };
+    gpsAccuracy.textContent = `GPS ±${Math.round(coords.accuracy || 0)} m`;
+    if (!state.driveStart && state.speed > 2) state.driveStart = now;
+  }
+
+  function estimateSpeedFromPosition(coords, ts) {
+    if (!state.lastGps || !ts || ts <= state.lastGps.ts) return null;
+    const meters = haversine(state.lastGps.lat, state.lastGps.lon, coords.latitude, coords.longitude);
+    const seconds = (ts - state.lastGps.ts) / 1000;
+    if (seconds <= 0 || meters > 250) return null;
+    return (meters / seconds) * 3.6;
+  }
+
+  function haversine(lat1, lon1, lat2, lon2) {
+    const R = 6371000;
+    const toRad = d => d * Math.PI / 180;
+    const dLat = toRad(lat2-lat1);
+    const dLon = toRad(lon2-lon1);
+    const a = Math.sin(dLat/2)**2 + Math.cos(toRad(lat1))*Math.cos(toRad(lat2))*Math.sin(dLon/2)**2;
+    return 2 * R * Math.asin(Math.sqrt(a));
+  }
+
+  function setSpeed(next, now = performance.now()) {
+    const dt = Math.max(.06, (now - state.lastSpeedTs) / 1000);
+    const gpsAccelG = ((next - state.speed) / 3.6) / dt / 9.80665;
+    if (!state.sensorEnabled || state.accelG < .03) {
+      state.accelG = state.accelG * .55 + Math.abs(gpsAccelG) * .45;
+    }
+    state.accelG = clamp(state.accelG, 0, 1.6);
+    state.maxG = Math.max(state.maxG, state.accelG);
+    state.prevSpeed = state.speed;
+    state.speed = next;
+    state.topSpeed = Math.max(state.topSpeed, next);
+    state.lastSpeedTs = now;
+
+    performanceLogic(now);
+    maybeReactToAcceleration(now);
+    recordTripSample(now);
+    audioEngine.update();
+  }
+
+  $('enableSensors').addEventListener('click', enableSensors);
+
+  // ---------- Audio ----------
+  const audioEngine = {
+    ctx: null,
+    master: null,
+    osc1: null,
+    osc2: null,
+    gain1: null,
+    gain2: null,
+    filter: null,
+    lfo: null,
+    lfoGain: null,
+
+    async start() {
+      if (!this.ctx) this.build();
+      if (!this.ctx) return;
+      await this.ctx.resume();
+      state.audioOn = !state.audioOn;
+      $('audioStart').textContent = state.audioOn ? 'STOP SOUND' : 'START SOUND';
+      this.update(true);
+    },
+
+    build() {
+      const AC = window.AudioContext || window.webkitAudioContext;
+      if (!AC) return;
+      this.ctx = new AC();
+      this.master = this.ctx.createGain();
+      this.filter = this.ctx.createBiquadFilter();
+      this.filter.type = 'lowpass';
+      this.osc1 = this.ctx.createOscillator();
+      this.osc2 = this.ctx.createOscillator();
+      this.gain1 = this.ctx.createGain();
+      this.gain2 = this.ctx.createGain();
+      this.lfo = this.ctx.createOscillator();
+      this.lfoGain = this.ctx.createGain();
+      this.lfoGain.gain.value = 4;
+      this.lfo.frequency.value = 7;
+
+      this.osc1.connect(this.gain1).connect(this.filter);
+      this.osc2.connect(this.gain2).connect(this.filter);
+      this.lfo.connect(this.lfoGain).connect(this.osc1.frequency);
+      this.filter.connect(this.master).connect(this.ctx.destination);
+      this.master.gain.value = 0;
+      this.osc1.start(); this.osc2.start(); this.lfo.start();
+    },
+
+    update(immediate = false) {
+      if (!this.ctx) return;
+      const now = this.ctx.currentTime;
+      const response = Number($('response').value) / 100;
+      const character = Number($('character').value) / 100;
+      const volume = Number($('volume').value) / 100;
+      const s = state.speed;
+      const a = state.accelG;
+      const profiles = {
+        cyber: { base:54, slope:4.0, ratio:1.51, wave1:'sine', wave2:'triangle', filter:1500 },
+        pod:   { base:46, slope:5.8, ratio:1.98, wave1:'sawtooth', wave2:'square', filter:1050 },
+        v10:   { base:68, slope:8.3, ratio:1.50, wave1:'sawtooth', wave2:'triangle', filter:1850 },
+        warp:  { base:82, slope:3.2, ratio:2.01, wave1:'sine', wave2:'sine', filter:2300 },
+        sport: { base:52, slope:6.6, ratio:1.72, wave1:'sawtooth', wave2:'triangle', filter:1750 }
+      };
+      const p = profiles[state.selectedMode] || profiles.cyber;
+      this.osc1.type = p.wave1; this.osc2.type = p.wave2;
+      const sportBoost = state.sportActive ? 1.16 : 1;
+      const baseHz = (p.base + (s * p.slope) + (a * 190 * response)) * sportBoost;
+      const t = immediate ? .02 : clamp(.18 - response * .14, .025, .15);
+      this.osc1.frequency.setTargetAtTime(baseHz, now, t);
+      this.osc2.frequency.setTargetAtTime(baseHz * (p.ratio + character * .08), now, t);
+      this.filter.frequency.setTargetAtTime(p.filter + s * 11 + character * 1150 + (state.sportActive ? 350 : 0), now, .08);
+      this.gain1.gain.setTargetAtTime(.52, now, .03);
+      this.gain2.gain.setTargetAtTime(.16 + character * .16, now, .03);
+      const dynamic = clamp(.14 + s/230 + a*.30, .12, 1);
+      const target = state.audioOn ? volume * dynamic * (state.sportActive ? .39 : .34) : 0;
+      this.master.gain.setTargetAtTime(target, now, .04);
+    }
+  };
+  $('audioStart').addEventListener('click', () => audioEngine.start());
+
+  // ---------- Performance ----------
+  $('armRun').addEventListener('click', () => armPerformance(false));
+  $('resetRun').addEventListener('click', resetPerformance);
+
+  function armPerformance(fromSport) {
+    state.run = { armed:true, active:false, startTs:0, t050:null, t0100:null, t100Start:null, t100200:null, sportRun:!!fromSport };
+    $('runState').textContent = 'ARMED';
+    $('startSpeed').textContent = `${Math.round(state.speed)} km/h`;
+    $('armRun').textContent = 'ARMED';
+    if (state.sportActive) {
+      $('sportRunKicker').textContent = state.speed < 2 ? 'READY' : 'WAIT FOR STOP';
+      $('sportTimer').textContent = '0.00';
+      if (state.speed < 2 && fromSport) speakKey('ready');
+    }
+  }
+
+  function resetPerformance() {
+    state.run = { armed:false, active:false, startTs:0, t050:null, t0100:null, t100Start:null, t100200:null, sportRun:false };
+    ['run050','run0100','run100200'].forEach(id => $(id).textContent = '—');
+    $('maxG').textContent = '0.00';
+    $('runState').textContent = 'IDLE';
+    $('liveTimer').textContent = '0.00 s';
+    $('armRun').textContent = 'ARM RUN';
+    $('sportTimer').textContent = '0.00';
+    if (state.sportActive) $('sportRunKicker').textContent = state.speed < 2 ? 'READY' : 'SPORT ACTIVE';
+    state.maxG = 0;
+  }
+
+  function complete0100(elapsed) {
+    const r = state.run;
+    r.t0100 = elapsed;
+    r.t100Start = performance.now();
+    $('run0100').textContent = elapsed.toFixed(2);
+    state.lastSportResult = elapsed;
+
+    let isNewBest = false;
+    if (!state.best0100 || elapsed < state.best0100) {
+      state.best0100 = elapsed;
+      localStorage.setItem('evdrive-best-0100', String(elapsed));
+      isNewBest = true;
+    }
+    updateBestLabel(isNewBest);
+
+    if (state.sportActive) {
+      // SPORT EXPERIENCE is a dedicated 0–100 run: end it exactly at 100 km/h.
+      // Keep the measured result in the Performance card and voice announcement,
+      // but immediately reset the central stopwatch for the next launch.
+      r.active = false;
+      r.armed = false;
+      $('runState').textContent = 'COMPLETE';
+      $('armRun').textContent = 'ARM RUN';
+      $('liveTimer').textContent = '0.00 s';
+      $('sportTimer').textContent = '0.00';
+      $('sportRunKicker').textContent = isNewBest ? `NEW BEST · ${elapsed.toFixed(2)} s` : `0–100 · ${elapsed.toFixed(2)} s`;
+      flashSport();
+      announce0100(elapsed, isNewBest);
+    }
+  }
+
+  function performanceLogic(now) {
+    const r = state.run;
+
+    // Sport auto-arm again when the car returns to a standstill.
+    if (state.sportActive && state.voice.autoArm && !r.active && !r.armed && state.speed < 1.2) {
+      armPerformance(true);
+    }
+
+    if (r.armed && !r.active && state.prevSpeed < 2 && state.speed >= 2) {
+      r.active = true;
+      r.startTs = now;
+      r.armed = false;
+      $('runState').textContent = 'RUNNING';
+      $('armRun').textContent = 'RUNNING';
+      if (state.sportActive) {
+        $('sportRunKicker').textContent = 'GO';
+        $('sportTimer').textContent = '0.00';
+        speakKey('go', { interrupt:true });
+      }
+    }
+    if (!r.active) return;
+
+    const elapsed = (now - r.startTs)/1000;
+    if (state.sportActive) $('sportTimer').textContent = elapsed.toFixed(2);
+
+    if (r.t050 === null && state.speed >= 50) {
+      r.t050 = elapsed;
+      $('run050').textContent = elapsed.toFixed(2);
+    }
+    if (r.t0100 === null && state.speed >= 100) {
+      complete0100(elapsed);
+      // complete0100 ends SPORT 0–100 immediately. Do not continue updating its timer.
+      if (state.sportActive) return;
+    }
+
+    if (r.t100Start && r.t100200 === null && state.speed >= 200) {
+      r.t100200 = (now - r.t100Start)/1000;
+      $('run100200').textContent = r.t100200.toFixed(2);
+      r.active = false;
+      $('runState').textContent = 'COMPLETE';
+      $('armRun').textContent = 'ARM RUN';
+    }
+
+    // If the run reaches 100, the 0–100 experience is complete even if 100–200 continues in HUD.
+    if (r.t0100 !== null && state.sportActive && state.speed < 100 && elapsed > r.t0100 + 1.5) {
+      r.active = false;
+      $('runState').textContent = 'COMPLETE';
+      $('armRun').textContent = 'ARM RUN';
+    }
+
+    // Abort a launch if the car stops before reaching 100.
+    if (state.speed < 1 && elapsed > 1.6 && r.t0100 === null) {
+      r.active = false;
+      $('runState').textContent = 'ABORTED';
+      $('armRun').textContent = 'ARM RUN';
+      if (state.sportActive) $('sportRunKicker').textContent = 'READY';
+    }
+  }
+
+  // ---------- Trips ----------
+  $('recordTrip').addEventListener('click', () => {
+    if (!state.tripRecording) {
+      state.tripRecording = true;
+      state.tripStart = performance.now();
+      state.tripSamples = [];
+      $('recordTrip').textContent = 'STOP TRIP';
+      $('emptyChart').style.display = 'none';
+    } else {
+      state.tripRecording = false;
+      $('recordTrip').textContent = 'START TRIP';
+      drawTrip();
+    }
+  });
+
+  function recordTripSample(now) {
+    if (!state.tripRecording) return;
+    const last = state.tripSamples[state.tripSamples.length-1];
+    if (last && now - last.ms < 300) return;
+    state.tripSamples.push({ ms: now, t:(now-state.tripStart)/1000, speed:state.speed, g:state.accelG });
+    if (state.tripSamples.length > 3600) state.tripSamples.shift();
+  }
+
+  $('saveTrip').addEventListener('click', () => {
+    const snapshot = { savedAt:Date.now(), samples:state.tripSamples };
+    localStorage.setItem('evdrive-last-trip', JSON.stringify(snapshot));
+    $('saveTrip').textContent = 'SAVED';
+    setTimeout(() => $('saveTrip').textContent = 'SAVE SNAPSHOT', 1000);
+  });
+  $('loadTrip').addEventListener('click', () => {
+    try {
+      const data = JSON.parse(localStorage.getItem('evdrive-last-trip') || 'null');
+      if (data?.samples?.length) {
+        state.tripSamples = data.samples;
+        state.tripRecording = false;
+        $('recordTrip').textContent = 'START TRIP';
+        drawTrip();
+      }
+    } catch {}
+  });
+  $('clearTrip').addEventListener('click', () => {
+    state.tripSamples = [];
+    state.tripRecording = false;
+    $('recordTrip').textContent = 'START TRIP';
+    localStorage.removeItem('evdrive-last-trip');
+    drawTrip();
+  });
+
+  function tripStats() {
+    const a = state.tripSamples;
+    if (a.length < 2) return { duration:0, max:0, avg:0, distance:0 };
+    const duration = a[a.length-1].t - a[0].t;
+    let distance = 0, speedSum = 0, max = 0;
+    for (let i=1;i<a.length;i++) {
+      const dt = Math.max(0, a[i].t-a[i-1].t);
+      distance += ((a[i].speed+a[i-1].speed)/2) * dt / 3600;
+      speedSum += a[i].speed;
+      max = Math.max(max, a[i].speed);
+    }
+    return { duration, max, avg:speedSum/Math.max(1,a.length-1), distance };
+  }
+
+  function drawTrip() {
+    const c = $('tripCanvas');
+    if (!c) return;
+    const ctx = c.getContext('2d');
+    const rect = c.getBoundingClientRect();
+    const dpr = window.devicePixelRatio || 1;
+    c.width = Math.max(600, Math.round(rect.width * dpr));
+    c.height = Math.max(250, Math.round(rect.height * dpr));
+    ctx.setTransform(dpr,0,0,dpr,0,0);
+    const w = rect.width, h = rect.height;
+    ctx.clearRect(0,0,w,h);
+
+    const samples = state.tripSamples;
+    const stats = tripStats();
+    $('tripDistance').textContent = `${stats.distance.toFixed(2)} km`;
+    $('tripDuration').textContent = fmtTime(stats.duration);
+    $('tripAverage').textContent = `${Math.round(stats.avg)} km/h`;
+    $('tripMax').textContent = `${Math.round(stats.max)} km/h`;
+    $('emptyChart').style.display = samples.length > 1 ? 'none' : 'grid';
+    if (samples.length < 2) return;
+
+    const css = getComputedStyle(document.body);
+    const line = css.getPropertyValue('--line').trim();
+    const text = css.getPropertyValue('--muted').trim();
+    const fg = state.sportActive ? css.getPropertyValue('--sport').trim() : css.getPropertyValue('--text').trim();
+    const pad = {l:42,r:14,t:16,b:28};
+    const maxSpeed = Math.max(50, Math.ceil(stats.max/50)*50);
+    const total = Math.max(1, samples[samples.length-1].t - samples[0].t);
+
+    ctx.strokeStyle = line; ctx.lineWidth = 1;
+    ctx.fillStyle = text; ctx.font = '11px -apple-system, BlinkMacSystemFont, sans-serif';
+    for (let i=0;i<=4;i++) {
+      const y = pad.t + (h-pad.t-pad.b)*(i/4);
+      ctx.beginPath(); ctx.moveTo(pad.l,y); ctx.lineTo(w-pad.r,y); ctx.stroke();
+      const val = Math.round(maxSpeed*(1-i/4));
+      ctx.fillText(String(val), 6, y+4);
+    }
+
+    ctx.strokeStyle = fg; ctx.lineWidth = 2; ctx.beginPath();
+    samples.forEach((s,i) => {
+      const x = pad.l + ((s.t-samples[0].t)/total)*(w-pad.l-pad.r);
+      const y = pad.t + (1-s.speed/maxSpeed)*(h-pad.t-pad.b);
+      i ? ctx.lineTo(x,y) : ctx.moveTo(x,y);
+    });
+    ctx.stroke();
+  }
+  window.addEventListener('resize', () => {
+    if ($('view-trips').classList.contains('active')) drawTrip();
+  });
+
+  // ---------- Main animation ----------
+  let lastFrame = performance.now();
+  function frame(now) {
+    const dt = Math.min(.05, (now-lastFrame)/1000);
+    lastFrame = now;
+
+    if (state.demo) {
+      state.demoPhase += dt;
+      // Loop designed to demonstrate the full SPORT launch cycle.
+      const t = state.demoPhase % 15;
+      let target;
+      if (t < 2.2) target = 0;
+      else if (t < 5.7) target = ((t-2.2)/3.5)*112;
+      else if (t < 8.3) target = 112 + Math.sin((t-5.7)*1.2)*4;
+      else if (t < 12.3) target = 112*(1-(t-8.3)/4);
+      else target = 0;
+      const response = state.sportActive ? .23 : .17;
+      const next = state.speed + (target-state.speed)*response;
+      setSpeed(next, now);
+      if (!state.driveStart && next > 2) state.driveStart = now;
+      state.distanceKm += state.speed * dt / 3600;
+    }
+
+    speedValue.textContent = Math.round(state.speed);
+    accelValue.textContent = `${state.accelG.toFixed(2)} g`;
+    topSpeedValue.textContent = `${Math.round(state.topSpeed)} km/h`;
+    distanceValue.textContent = `${state.distanceKm.toFixed(2)} km`;
+    const driveSeconds = state.driveStart ? (now-state.driveStart)/1000 : 0;
+    driveTimeValue.textContent = fmtTime(driveSeconds);
+    $('maxG').textContent = state.maxG.toFixed(2);
+
+    const angle = 180 + clamp(state.speed/240,0,1)*180;
+    needle.style.transform = `rotate(${angle}deg)`;
+    $('gaugeProgress').style.transform = `rotate(${clamp(state.speed/240,0,1)*180}deg)`;
+
+    if (state.run.active) {
+      const live = (now-state.run.startTs)/1000;
+      $('liveTimer').textContent = `${live.toFixed(2)} s`;
+      if (state.sportActive && state.run.t0100 === null) $('sportTimer').textContent = live.toFixed(2);
+    }
+
+    if (state.sportActive && state.run.armed && state.speed < 2) $('sportRunKicker').textContent = 'READY';
+    if (state.tripRecording && Math.floor(now/500) !== Math.floor((now-dt*1000)/500)) drawTrip();
+
+    requestAnimationFrame(frame);
+  }
+  requestAnimationFrame(frame);
+
+  // Service worker is useful on iPhone/Android; harmless if unsupported in Tesla browser.
+  if ('serviceWorker' in navigator && location.protocol === 'https:') {
+    navigator.serviceWorker.register('./sw.js').catch(() => {});
+  }
+})();
+
+  </script>
 </body>
 </html>
