@@ -1,10 +1,11 @@
 {
-  "name": "EVDRIVE V12 Sport Experience",
+  "name": "EVDRIVE V13",
   "short_name": "EVDRIVE",
   "start_url": "./index.html",
   "display": "standalone",
   "background_color": "#0b0c0e",
   "theme_color": "#0b0c0e",
-  "description": "Tesla-focused drive modes, SPORT voice experience, performance HUD and trip replay prototype.",
-  "icons": []
+  "icons": [
+    {"src": "./icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any"}
+  ]
 }

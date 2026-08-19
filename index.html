@@ -4,7 +4,8 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
   <meta name="theme-color" content="#090a0c" />
-  <title>EVDRIVE V12.1 · Sport Experience</title>
+  <link rel="manifest" href="./manifest.webmanifest" />
+  <title>EVDRIVE V13 · Tesla Cockpit + Classic Diesel</title>
   <style>
 :root {
   --bg: #0b0c0e;
@@ -237,6 +238,125 @@ footer { text-align:center; color:var(--soft); font-size:10px; padding-top:24px;
   .toggle-row { flex-direction:column; gap:12px; }
 }
 
+
+/* ===== V13 TESLA LANDSCAPE COCKPIT ===== */
+.engine-status {
+  display:none; align-items:baseline; justify-content:center; gap:9px; margin-top:8px;
+  color:#dcae63; font-variant-numeric:tabular-nums; white-space:nowrap;
+}
+.engine-status span,.engine-status small {font-size:9px; font-weight:850; letter-spacing:.13em; color:#aa8a57;}
+.engine-status strong {font-size:13px; font-weight:750; letter-spacing:.02em;}
+body.diesel-active .engine-status {display:flex;}
+body.diesel-active .gauge-arc {border-color:rgba(215,166,90,.38); box-shadow:inset 0 0 28px rgba(205,142,48,.045);}
+body.diesel-active .needle {background:linear-gradient(90deg,#d2a45c,#f0d09a); box-shadow:0 0 18px rgba(222,169,84,.45);}
+body.diesel-active .gauge-center {background:#c99950; box-shadow:0 0 16px rgba(201,153,80,.42);}
+.mode-card.diesel-card .mode-icon {color:#d8ad69;}
+.mode-card.diesel-card.selected {color:#fff; background:linear-gradient(145deg,#2b241b,#5b4528 68%,#a47a3c); border-color:rgba(216,173,105,.55);}
+.mode-card.diesel-card.selected .mode-sub {color:rgba(255,255,255,.68);}
+.sensor-pill {min-width:92px;}
+
+@media (min-width: 1000px) and (min-height: 600px) {
+  html, body {height:100%; overflow:hidden;}
+  body {min-height:100%;}
+  .app-shell {
+    width:min(1500px, calc(100% - 24px)); height:100dvh; margin:0 auto; padding:10px 0 10px;
+    display:grid; grid-template-rows:46px minmax(0,1fr); gap:8px;
+  }
+  .topbar {margin:0; min-height:46px;}
+  .brand-mark {width:34px; height:34px; border-radius:10px;}
+  .top-actions {gap:7px;}
+  .icon-btn,.pill {height:36px; min-height:36px;}
+  main {
+    min-height:0; display:grid; grid-template-columns:minmax(0,1.72fr) minmax(345px,.82fr);
+    grid-template-rows:44px minmax(0,1fr); gap:9px 12px;
+  }
+  .hero-card {
+    grid-column:1; grid-row:1 / 3; min-height:0; height:100%; padding:12px 18px 14px;
+    display:flex; flex-direction:column; overflow:hidden; border-radius:20px;
+  }
+  .status-row {min-height:18px; flex:0 0 auto; font-size:10px;}
+  .speed-stage {min-height:0; flex:1 1 auto; overflow:hidden;}
+  .speed-readout {min-width:290px;}
+  .speed-value {font-size:clamp(96px, 11vw, 166px);}
+  .speed-unit {margin-top:9px; font-size:11px;}
+  .gauge {width:min(610px, 72vw); max-height:92%; bottom:1%;}
+  body.sport-active .sport-stopwatch {height:34px; margin-top:5px;}
+  .sport-stopwatch strong {font-size:28px;}
+  .sport-result {font-size:8px;}
+  .metric-grid {flex:0 0 auto; gap:7px;}
+  .metric {padding:9px 11px; border-radius:13px; gap:4px;}
+  .metric span {font-size:8px;}
+  .metric strong {font-size:13px;}
+
+  .tabs {grid-column:2; grid-row:1; margin:0; padding:4px; gap:4px; border-radius:14px;}
+  .tab {min-height:34px; border-radius:10px; font-size:9px;}
+  .view.active {grid-column:2; grid-row:2; min-height:0; height:100%; overflow:hidden;}
+  .section-head {margin:0 0 8px; gap:8px;}
+  .section-head h1 {font-size:16px; margin:0 0 2px;}
+  .section-head p {font-size:10px; line-height:1.25;}
+  .primary {min-height:36px; padding:0 13px; border-radius:10px; font-size:9px;}
+  .secondary {min-height:34px; padding:0 11px; border-radius:10px; font-size:9px;}
+
+  #view-modes.active {display:grid; grid-template-rows:auto minmax(0,1.04fr) auto minmax(0,.9fr); gap:7px;}
+  .mode-grid {grid-template-columns:repeat(2,1fr); grid-template-rows:repeat(3,minmax(0,1fr)); gap:6px; min-height:0;}
+  .mode-card {min-height:0; height:100%; padding:9px 10px; border-radius:12px; gap:1px;}
+  .mode-icon {font-size:15px; margin-bottom:auto;}
+  .mode-name {font-size:9px; letter-spacing:.04em;}
+  .mode-sub {font-size:7.5px; line-height:1.15;}
+  .controls-card {margin:0; padding:9px 10px; grid-template-columns:repeat(3,1fr); gap:8px; border-radius:13px;}
+  .controls-card label {font-size:8px; gap:4px;}
+  .controls-card input {height:14px;}
+  .sport-settings {margin:0; padding:9px 10px; border-radius:13px; min-height:0; overflow:hidden;}
+  .sport-settings-head {margin-bottom:6px;}
+  .sport-settings h2 {font-size:12px; margin:1px 0 0;}
+  .eyebrow {font-size:7px;}
+  .setting-grid {grid-template-columns:repeat(3,1fr); gap:5px;}
+  .select-wrap {padding:6px 7px; gap:2px; border-radius:9px;}
+  .select-wrap span {font-size:7px;}
+  .select-wrap select {font-size:9px;}
+  .toggle-row {margin-top:6px; gap:8px;}
+  .switch-label {font-size:8px; gap:4px;}
+  .switch {width:28px; height:16px;}
+  .switch::after {width:10px; height:10px;}
+  .switch-label input:checked + .switch::after {transform:translateX(12px);}
+  .voice-note {display:none;}
+
+  #view-performance.active {display:grid; grid-template-rows:auto minmax(0,1fr) auto auto; gap:7px;}
+  .run-grid {grid-template-columns:repeat(2,1fr); gap:7px; min-height:0;}
+  .run-card {min-height:0; padding:11px 13px; border-radius:13px;}
+  .run-card strong {font-size:32px;}
+  .performance-strip {grid-template-columns:repeat(3,1fr); gap:6px; margin:0;}
+  .performance-strip div {padding:8px 9px; border-radius:11px;}
+  .performance-strip span {font-size:7px;}
+  .performance-strip strong {font-size:11px; margin-top:2px;}
+  .wide {margin-top:0;}
+
+  #view-trips.active {display:grid; grid-template-rows:auto auto minmax(0,1fr) auto; gap:7px;}
+  .trip-summary {grid-template-columns:repeat(2,1fr); gap:6px;}
+  .trip-summary > div {padding:8px 10px; border-radius:11px;}
+  .trip-summary span {font-size:7px;}
+  .trip-summary strong {font-size:14px; margin-top:2px;}
+  .chart-card {height:auto; min-height:0; margin:0; padding:7px; border-radius:13px;}
+  .trip-actions {margin:0; gap:6px;}
+  .trip-actions .secondary {flex:1;}
+  .permission-card, footer {display:none !important;}
+}
+
+@media (min-width: 1000px) and (max-height: 700px) {
+  .app-shell {grid-template-rows:40px minmax(0,1fr); padding:7px 0;}
+  .topbar {min-height:40px;}
+  .brand-mark {width:31px; height:31px;}
+  .version {font-size:8px;}
+  .hero-card {padding:8px 14px 10px;}
+  .speed-value {font-size:clamp(88px, 10vw, 142px);}
+  .gauge {width:min(540px, 70vw);}
+  .metric {padding:7px 9px;}
+  #view-modes.active {grid-template-rows:auto minmax(0,1fr) auto minmax(0,.82fr); gap:5px;}
+  .mode-card {padding:7px 8px;}
+  .sport-settings {padding:7px 8px;}
+  .toggle-row {margin-top:4px;}
+}
+
   </style>
 </head>
 <body>
@@ -248,12 +368,13 @@ footer { text-align:center; color:var(--soft); font-size:10px; padding-top:24px;
         <div class="brand-mark" aria-hidden="true">E</div>
         <div>
           <div class="brand">EVDRIVE</div>
-          <div class="version">V12.1 · SPORT EXPERIENCE</div>
+          <div class="version">V13 · TESLA COCKPIT · SPORT + CLASSIC DIESEL</div>
         </div>
       </div>
       <div class="top-actions">
         <button class="icon-btn" id="themeToggle" title="Toggle theme" aria-label="Toggle theme">◐</button>
         <button class="pill" id="demoToggle">DEMO OFF</button>
+        <button class="pill sensor-pill" id="enableSensors">SENSORS</button>
       </div>
     </header>
 
@@ -286,6 +407,7 @@ footer { text-align:center; color:var(--soft); font-size:10px; padding-top:24px;
               <small>s</small>
             </div>
             <div class="sport-result" id="sportResult">BEST —</div>
+            <div class="engine-status" id="engineStatus"><span>CLASSIC DIESEL</span><strong id="engineRpm">800 RPM</strong><small id="engineGear">GEAR 1</small></div>
           </div>
         </div>
 
@@ -324,6 +446,9 @@ footer { text-align:center; color:var(--soft); font-size:10px; padding-top:24px;
           </button>
           <button class="mode-card" data-mode="v10">
             <span class="mode-icon">V10</span><span class="mode-name">V10 SYNTH</span><span class="mode-sub">high-rev combustion-inspired</span>
+          </button>
+          <button class="mode-card diesel-card" data-mode="diesel">
+            <span class="mode-icon">D</span><span class="mode-name">CLASSIC DIESEL</span><span class="mode-sub">turbo · combustion pulse · virtual gears</span>
           </button>
           <button class="mode-card" data-mode="warp">
             <span class="mode-icon">✦</span><span class="mode-name">WARP</span><span class="mode-sub">smooth sci-fi acceleration</span>
@@ -433,16 +558,10 @@ footer { text-align:center; color:var(--soft); font-size:10px; padding-top:24px;
         </div>
       </section>
 
-      <section class="permission-card">
-        <div>
-          <strong>Vehicle input</strong>
-          <p>Uses browser geolocation and, when available, device motion. This prototype does not change the Tesla vehicle drive mode.</p>
-        </div>
-        <button class="secondary" id="enableSensors">ENABLE SENSORS</button>
-      </section>
+
     </main>
 
-    <footer>EVDRIVE V12.1 · Experimental prototype · Keep your attention on the road.</footer>
+    <footer>EVDRIVE V13 · Experimental prototype · Keep your attention on the road.</footer>
   </div>
 
   <script>
@@ -477,6 +596,8 @@ footer { text-align:center; color:var(--soft); font-size:10px; padding-top:24px;
     watchId: null,
     lastSpeedTs: performance.now(),
     selectedMode: 'cyber',
+    dieselRpm: 800,
+    dieselGear: 1,
     lastNonSportMode: 'cyber',
     sportActive: false,
     audioOn: false,
@@ -571,12 +692,15 @@ footer { text-align:center; color:var(--soft); font-size:10px; padding-top:24px;
       document.querySelectorAll('.mode-card').forEach(x => x.classList.remove('selected'));
       card.classList.add('selected');
       if (mode === 'sport') {
+        document.body.classList.remove('diesel-active');
         activateSport();
       } else {
         state.lastNonSportMode = mode;
         state.selectedMode = mode;
         deactivateSport();
+        document.body.classList.toggle('diesel-active', mode === 'diesel');
       }
+      updateEngineHud();
       audioEngine.update(true);
     });
   });
@@ -824,6 +948,9 @@ footer { text-align:center; color:var(--soft); font-size:10px; padding-top:24px;
     const candidate = clamp(raw, 0, 1.5);
     state.accelG = state.accelG * 0.72 + candidate * 0.28;
     state.maxG = Math.max(state.maxG, state.accelG);
+    // Motion arrives faster than GPS on many phones; let load/turbo react immediately.
+    if (state.audioOn) audioEngine.update();
+    maybeReactToAcceleration(performance.now());
   }
 
   function onPosition(pos) {
@@ -882,9 +1009,36 @@ footer { text-align:center; color:var(--soft); font-size:10px; padding-top:24px;
   $('enableSensors').addEventListener('click', enableSensors);
 
   // ---------- Audio ----------
+  function dieselDynamics(speed, accel) {
+    const ranges = [0, 18, 34, 54, 78, 108, 145, 190, 240];
+    let gear = 1;
+    for (let i = 1; i < ranges.length - 1; i++) {
+      if (speed >= ranges[i]) gear = i + 1;
+    }
+    gear = clamp(gear, 1, 7);
+    const start = ranges[gear - 1] || 0;
+    const end = ranges[gear] || 240;
+    const p = clamp((speed - start) / Math.max(1, end - start), 0, 1);
+    let rpm = speed < 2 ? 790 + accel * 120 : 880 + p * 2600 + accel * 230;
+    // A short load-dependent flare makes the virtual shift feel less sterile.
+    if (speed >= end - 2 && gear < 7) rpm += accel * 160;
+    rpm = clamp(rpm, 760, 3750);
+    return { rpm, gear, load: clamp(accel * 1.18 + speed / 500, 0.04, 1) };
+  }
+
+  function updateEngineHud() {
+    const dyn = dieselDynamics(state.speed, state.accelG);
+    state.dieselRpm += (dyn.rpm - state.dieselRpm) * 0.18;
+    state.dieselGear = dyn.gear;
+    $('engineRpm').textContent = `${Math.round(state.dieselRpm / 10) * 10} RPM`;
+    $('engineGear').textContent = state.speed < 2 ? 'IDLE' : `GEAR ${state.dieselGear}`;
+  }
+
   const audioEngine = {
     ctx: null,
     master: null,
+    baseBus: null,
+    dieselBus: null,
     osc1: null,
     osc2: null,
     gain1: null,
@@ -892,6 +1046,22 @@ footer { text-align:center; color:var(--soft); font-size:10px; padding-top:24px;
     filter: null,
     lfo: null,
     lfoGain: null,
+    dieselExhaust: null,
+    dieselSub: null,
+    dieselRumble: null,
+    dieselLowpass: null,
+    dieselExhaustGain: null,
+    dieselSubGain: null,
+    dieselRumbleGain: null,
+    knockSource: null,
+    knockFilter: null,
+    knockGain: null,
+    knockPulse: null,
+    knockPulseDepth: null,
+    airFilter: null,
+    airGain: null,
+    turboOsc: null,
+    turboGain: null,
 
     async start() {
       if (!this.ctx) this.build();
@@ -902,11 +1072,35 @@ footer { text-align:center; color:var(--soft); font-size:10px; padding-top:24px;
       this.update(true);
     },
 
+    buildNoiseBuffer() {
+      const length = this.ctx.sampleRate * 2;
+      const buffer = this.ctx.createBuffer(1, length, this.ctx.sampleRate);
+      const data = buffer.getChannelData(0);
+      let last = 0;
+      for (let i = 0; i < length; i++) {
+        // Slightly correlated noise is less hissy and closer to mechanical/air noise.
+        const white = Math.random() * 2 - 1;
+        last = last * 0.34 + white * 0.66;
+        data[i] = last;
+      }
+      return buffer;
+    },
+
     build() {
       const AC = window.AudioContext || window.webkitAudioContext;
       if (!AC) return;
       this.ctx = new AC();
       this.master = this.ctx.createGain();
+      this.baseBus = this.ctx.createGain();
+      this.dieselBus = this.ctx.createGain();
+      this.master.gain.value = 0;
+      this.baseBus.gain.value = 1;
+      this.dieselBus.gain.value = 0;
+      this.baseBus.connect(this.master);
+      this.dieselBus.connect(this.master);
+      this.master.connect(this.ctx.destination);
+
+      // Existing EV / synthetic engine layer.
       this.filter = this.ctx.createBiquadFilter();
       this.filter.type = 'lowpass';
       this.osc1 = this.ctx.createOscillator();
@@ -917,13 +1111,65 @@ footer { text-align:center; color:var(--soft); font-size:10px; padding-top:24px;
       this.lfoGain = this.ctx.createGain();
       this.lfoGain.gain.value = 4;
       this.lfo.frequency.value = 7;
-
       this.osc1.connect(this.gain1).connect(this.filter);
       this.osc2.connect(this.gain2).connect(this.filter);
       this.lfo.connect(this.lfoGain).connect(this.osc1.frequency);
-      this.filter.connect(this.master).connect(this.ctx.destination);
-      this.master.gain.value = 0;
+      this.filter.connect(this.baseBus);
       this.osc1.start(); this.osc2.start(); this.lfo.start();
+
+      // CLASSIC DIESEL: four-cylinder firing pulse + low exhaust body.
+      this.dieselLowpass = this.ctx.createBiquadFilter();
+      this.dieselLowpass.type = 'lowpass';
+      this.dieselLowpass.Q.value = 1.2;
+      this.dieselExhaust = this.ctx.createOscillator();
+      this.dieselExhaust.type = 'sawtooth';
+      this.dieselSub = this.ctx.createOscillator();
+      this.dieselSub.type = 'triangle';
+      this.dieselRumble = this.ctx.createOscillator();
+      this.dieselRumble.type = 'sine';
+      this.dieselExhaustGain = this.ctx.createGain();
+      this.dieselSubGain = this.ctx.createGain();
+      this.dieselRumbleGain = this.ctx.createGain();
+      this.dieselExhaust.connect(this.dieselExhaustGain).connect(this.dieselLowpass);
+      this.dieselSub.connect(this.dieselSubGain).connect(this.dieselLowpass);
+      this.dieselRumble.connect(this.dieselRumbleGain).connect(this.dieselLowpass);
+      this.dieselLowpass.connect(this.dieselBus);
+
+      // Mechanical diesel clatter. Noise is amplitude-modulated at firing frequency.
+      const noiseBuffer = this.buildNoiseBuffer();
+      this.knockSource = this.ctx.createBufferSource();
+      this.knockSource.buffer = noiseBuffer;
+      this.knockSource.loop = true;
+      this.knockFilter = this.ctx.createBiquadFilter();
+      this.knockFilter.type = 'bandpass';
+      this.knockFilter.frequency.value = 1850;
+      this.knockFilter.Q.value = 1.7;
+      this.knockGain = this.ctx.createGain();
+      this.knockGain.gain.value = .01;
+      this.knockPulse = this.ctx.createOscillator();
+      this.knockPulse.type = 'square';
+      this.knockPulseDepth = this.ctx.createGain();
+      this.knockPulseDepth.gain.value = .012;
+      this.knockSource.connect(this.knockFilter).connect(this.knockGain).connect(this.dieselBus);
+      this.knockPulse.connect(this.knockPulseDepth).connect(this.knockGain.gain);
+
+      // Intake / turbo layer from the same broad-band noise plus a narrow whistle.
+      this.airFilter = this.ctx.createBiquadFilter();
+      this.airFilter.type = 'bandpass';
+      this.airFilter.frequency.value = 900;
+      this.airFilter.Q.value = .7;
+      this.airGain = this.ctx.createGain();
+      const airSource = this.ctx.createBufferSource();
+      airSource.buffer = noiseBuffer;
+      airSource.loop = true;
+      airSource.connect(this.airFilter).connect(this.airGain).connect(this.dieselBus);
+      this.turboOsc = this.ctx.createOscillator();
+      this.turboOsc.type = 'sine';
+      this.turboGain = this.ctx.createGain();
+      this.turboOsc.connect(this.turboGain).connect(this.dieselBus);
+
+      this.dieselExhaust.start(); this.dieselSub.start(); this.dieselRumble.start();
+      this.knockSource.start(); this.knockPulse.start(); airSource.start(); this.turboOsc.start();
     },
 
     update(immediate = false) {
@@ -934,26 +1180,63 @@ footer { text-align:center; color:var(--soft); font-size:10px; padding-top:24px;
       const volume = Number($('volume').value) / 100;
       const s = state.speed;
       const a = state.accelG;
-      const profiles = {
-        cyber: { base:54, slope:4.0, ratio:1.51, wave1:'sine', wave2:'triangle', filter:1500 },
-        pod:   { base:46, slope:5.8, ratio:1.98, wave1:'sawtooth', wave2:'square', filter:1050 },
-        v10:   { base:68, slope:8.3, ratio:1.50, wave1:'sawtooth', wave2:'triangle', filter:1850 },
-        warp:  { base:82, slope:3.2, ratio:2.01, wave1:'sine', wave2:'sine', filter:2300 },
-        sport: { base:52, slope:6.6, ratio:1.72, wave1:'sawtooth', wave2:'triangle', filter:1750 }
-      };
-      const p = profiles[state.selectedMode] || profiles.cyber;
-      this.osc1.type = p.wave1; this.osc2.type = p.wave2;
-      const sportBoost = state.sportActive ? 1.16 : 1;
-      const baseHz = (p.base + (s * p.slope) + (a * 190 * response)) * sportBoost;
-      const t = immediate ? .02 : clamp(.18 - response * .14, .025, .15);
-      this.osc1.frequency.setTargetAtTime(baseHz, now, t);
-      this.osc2.frequency.setTargetAtTime(baseHz * (p.ratio + character * .08), now, t);
-      this.filter.frequency.setTargetAtTime(p.filter + s * 11 + character * 1150 + (state.sportActive ? 350 : 0), now, .08);
-      this.gain1.gain.setTargetAtTime(.52, now, .03);
-      this.gain2.gain.setTargetAtTime(.16 + character * .16, now, .03);
-      const dynamic = clamp(.14 + s/230 + a*.30, .12, 1);
-      const target = state.audioOn ? volume * dynamic * (state.sportActive ? .39 : .34) : 0;
-      this.master.gain.setTargetAtTime(target, now, .04);
+      const isDiesel = state.selectedMode === 'diesel';
+      const t = immediate ? .018 : clamp(.16 - response * .125, .025, .13);
+
+      this.baseBus.gain.setTargetAtTime(isDiesel ? 0 : 1, now, .025);
+      this.dieselBus.gain.setTargetAtTime(isDiesel ? 1 : 0, now, .025);
+
+      if (isDiesel) {
+        const dyn = dieselDynamics(s, a);
+        state.dieselRpm += (dyn.rpm - state.dieselRpm) * (immediate ? .42 : .2);
+        state.dieselGear = dyn.gear;
+        const rpm = state.dieselRpm;
+        const firingHz = rpm / 60 * 2; // inline-4, four-stroke: two combustion events per revolution
+        const load = dyn.load;
+
+        this.dieselExhaust.frequency.setTargetAtTime(firingHz, now, t);
+        this.dieselSub.frequency.setTargetAtTime(Math.max(18, firingHz * .5), now, t);
+        this.dieselRumble.frequency.setTargetAtTime(Math.max(12, firingHz * .25), now, t);
+        this.knockPulse.frequency.setTargetAtTime(firingHz, now, t);
+        this.dieselLowpass.frequency.setTargetAtTime(260 + rpm * .16 + load * 260 + character * 180, now, .06);
+        this.knockFilter.frequency.setTargetAtTime(1450 + rpm * .20 + character * 520, now, .08);
+        this.airFilter.frequency.setTargetAtTime(650 + rpm * .18 + load * 430, now, .08);
+        this.turboOsc.frequency.setTargetAtTime(700 + rpm * .58 + load * 780, now, .07);
+
+        this.dieselExhaustGain.gain.setTargetAtTime(.11 + load * .15, now, .04);
+        this.dieselSubGain.gain.setTargetAtTime(.075 + load * .055, now, .05);
+        this.dieselRumbleGain.gain.setTargetAtTime(.05 + (1-load) * .025, now, .06);
+        // More clatter at idle / low rpm; under boost the exhaust body and turbo dominate.
+        this.knockGain.gain.setTargetAtTime(.024 + (1 - clamp(rpm / 3500, 0, 1)) * .025 + character * .018, now, .04);
+        this.knockPulseDepth.gain.setTargetAtTime(.015 + character * .012, now, .06);
+        this.airGain.gain.setTargetAtTime(.008 + load * .035, now, .06);
+        this.turboGain.gain.setTargetAtTime(clamp((rpm - 1250) / 2600, 0, 1) * (.012 + load * .05), now, .08);
+
+        const idlePresence = s < 2 ? .52 : 1;
+        const dynamic = clamp(.34 + load * .48 + s / 420, .30, 1);
+        const target = state.audioOn ? volume * dynamic * .62 * idlePresence : 0;
+        this.master.gain.setTargetAtTime(target, now, .035);
+      } else {
+        const profiles = {
+          cyber: { base:54, slope:4.0, ratio:1.51, wave1:'sine', wave2:'triangle', filter:1500 },
+          pod:   { base:46, slope:5.8, ratio:1.98, wave1:'sawtooth', wave2:'square', filter:1050 },
+          v10:   { base:68, slope:8.3, ratio:1.50, wave1:'sawtooth', wave2:'triangle', filter:1850 },
+          warp:  { base:82, slope:3.2, ratio:2.01, wave1:'sine', wave2:'sine', filter:2300 },
+          sport: { base:52, slope:6.6, ratio:1.72, wave1:'sawtooth', wave2:'triangle', filter:1750 }
+        };
+        const p = profiles[state.selectedMode] || profiles.cyber;
+        this.osc1.type = p.wave1; this.osc2.type = p.wave2;
+        const sportBoost = state.sportActive ? 1.16 : 1;
+        const baseHz = (p.base + (s * p.slope) + (a * 190 * response)) * sportBoost;
+        this.osc1.frequency.setTargetAtTime(baseHz, now, t);
+        this.osc2.frequency.setTargetAtTime(baseHz * (p.ratio + character * .08), now, t);
+        this.filter.frequency.setTargetAtTime(p.filter + s * 11 + character * 1150 + (state.sportActive ? 350 : 0), now, .08);
+        this.gain1.gain.setTargetAtTime(.52, now, .03);
+        this.gain2.gain.setTargetAtTime(.16 + character * .16, now, .03);
+        const dynamic = clamp(.14 + s/230 + a*.30, .12, 1);
+        const target = state.audioOn ? volume * dynamic * (state.sportActive ? .39 : .34) : 0;
+        this.master.gain.setTargetAtTime(target, now, .04);
+      }
     }
   };
   $('audioStart').addEventListener('click', () => audioEngine.start());
@@ -1218,6 +1501,7 @@ footer { text-align:center; color:var(--soft); font-size:10px; padding-top:24px;
     const driveSeconds = state.driveStart ? (now-state.driveStart)/1000 : 0;
     driveTimeValue.textContent = fmtTime(driveSeconds);
     $('maxG').textContent = state.maxG.toFixed(2);
+    updateEngineHud();
 
     const angle = 180 + clamp(state.speed/240,0,1)*180;
     needle.style.transform = `rotate(${angle}deg)`;

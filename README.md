@@ -1,46 +1,29 @@
-# EVDRIVE V12 · SPORT EXPERIENCE
+# EVDRIVE V13 – Tesla Cockpit + Classic Diesel
 
-This static web prototype extends EVDRIVE V11 with a new SPORT EXPERIENCE.
+## Neu in V13
+- Tesla-Querformat-Cockpit: Tacho links dominant, Bedienung rechts kompakt, keine Seiten-Scrollerei im Desktop-/Tesla-Layout.
+- 6 Drive Modes: SPORT EXPERIENCE, CYBER EV, POD RACER, V10 SYNTH, CLASSIC DIESEL, WARP.
+- CLASSIC DIESEL mit dynamischer WebAudio-Synthese:
+  - virtueller 4-Zylinder-/4-Takt-Verbrennungsrhythmus
+  - Leerlauf und lastabhängige Drehzahl
+  - 7 simulierte Gänge mit Drehzahlabfall beim Schalten
+  - tiefer Abgas-/Rumble-Anteil
+  - mechanisches Diesel-Nageln
+  - Ansaug-/Turbo-Anteil abhängig von Last und Drehzahl
+  - Live-Anzeige von RPM und virtuellem Gang
+- Schnellere Lastreaktion über DeviceMotion, wenn vom Browser verfügbar.
+- SPORT EXPERIENCE und 0–100-Logik aus V12.1 bleiben erhalten.
 
-## New in V12
+## Empfohlener Test
+1. `index.html` über HTTPS hosten (z. B. GitHub Pages).
+2. Im Tesla-Browser öffnen.
+3. `DEMO ON` aktivieren.
+4. `CLASSIC DIESEL` auswählen.
+5. `START SOUND` drücken.
+6. Master Volume zunächst bei 45–60 % testen.
 
-- **SPORT EXPERIENCE** drive mode with aggressive red HUD styling.
-- Configurable activation announcement in **German or English**.
-- Three browser-TTS character presets: **Devil**, **Digital Assistant**, **Female Performance**.
-- Voice reactions during strong acceleration with low/medium/high reaction intensity.
-- Automatic **0–100 km/h stopwatch** when SPORT is active and the car launches from standstill.
-- Spoken 0–100 result after reaching 100 km/h.
-- Local personal-best storage and “NEW BEST” feedback.
-- SPORT demo cycle for testing without a moving vehicle.
-- Original Drive Modes, Performance HUD and Trip Replay remain included.
-
-## Important limitation
-
-SPORT EXPERIENCE is an EVDRIVE app mode. This prototype does **not** read or change the Tesla vehicle's actual Sport/Acceleration setting.
-
-## Run locally
-
-For desktop testing:
-
-```bash
-python3 -m http.server 8080
-```
-
-Open `http://localhost:8080`.
-
-Sensor permissions work best over HTTPS, so deployment is recommended for iPhone/Tesla browser testing.
-
-## Quick test
-
-1. Open EVDRIVE.
-2. Turn **DEMO ON**.
-3. Tap **SPORT EXPERIENCE**.
-4. Optionally tap **START SOUND** for the synthetic acceleration sound.
-5. Choose a voice, language and reaction intensity.
-6. Watch the automatic launch timer run from 0 to 100 km/h.
-
-## Notes
-
-- Browser speech voices differ between iPhone, Tesla browser, macOS and other platforms.
-- Performance timing is an experimental GPS/browser estimate, not certified measurement equipment.
-- Use acceleration testing only where safe and legal, and keep attention on the road.
+## Hinweise
+- Browser-Audio muss durch einen manuellen Klick freigegeben werden; deshalb ist `START SOUND` erforderlich.
+- GPS-Update-Raten und DeviceMotion-Unterstützung unterscheiden sich je nach Browser/Hardware.
+- Der Diesel-Sound wird vollständig in Echtzeit erzeugt und benötigt keine externen Audiodateien.
+- Die App verändert keinen Tesla-Fahrmodus und greift nicht in Fahrzeugsteuerungen ein.
