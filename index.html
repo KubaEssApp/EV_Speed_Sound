@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
   <meta name="theme-color" content="#090a0c" />
   <link rel="manifest" href="./manifest.webmanifest" />
-  <title>EVDRIVE V14 · Sport Cockpit + Classic Diesel</title>
+  <title>EVDRIVE V14.1 · Sport Cockpit Collision Fix</title>
   <style>
 :root {
   --bg: #0b0c0e;
@@ -539,6 +539,119 @@ body.sport-active .metric:first-child { box-shadow:inset 0 0 0 1px rgba(255,48,3
   .gauge-label { font-size:19px; }
 }
 
+
+/* ===== V14.1 SPORT COLLISION-SAFE LAYOUT ===== */
+/* The speed cluster is top-anchored in cockpit mode. Its position no longer
+   changes when SPORT adds the timer/result rows, preventing scale collisions. */
+@media (min-width:1000px) and (min-height:600px) {
+  .speed-readout {
+    top:28%;
+    transform:translate(-50%,0);
+  }
+  .gauge-shell { inset:10px 1% 0; }
+  .gauge-svg { width:min(770px,94%); max-height:calc(100% - 8px); }
+
+  /* One self-contained 0-100 pod: time and BEST can never overlap each other. */
+  body.sport-active .sport-stopwatch {
+    width:238px;
+    height:72px;
+    margin:12px auto 0;
+    padding:6px 14px 7px;
+    display:grid;
+    grid-template-columns:1fr;
+    grid-template-rows:11px 31px 15px;
+    align-items:center;
+    justify-items:center;
+    row-gap:1px;
+  }
+  .sport-stopwatch .timer-label {
+    grid-column:1;
+    align-self:center;
+    line-height:11px;
+  }
+  .timer-time {
+    display:flex;
+    align-items:baseline;
+    justify-content:center;
+    gap:6px;
+    min-width:0;
+  }
+  .timer-time strong { font-size:31px; line-height:1; }
+  .timer-time small { padding:0; font-size:10px; }
+  body.sport-active .sport-result {
+    opacity:1;
+    width:100%;
+    height:15px;
+    margin:0;
+    padding-top:3px;
+    border-top:1px solid rgba(255,255,255,.08);
+    font-size:8px;
+    line-height:11px;
+    text-align:center;
+    letter-spacing:.14em;
+    overflow:hidden;
+    white-space:nowrap;
+    text-overflow:ellipsis;
+  }
+
+  /* The pivot remains subtle and behind the timer instead of becoming a field. */
+  body.sport-active .pivot-halo,
+  body.sport-active .gauge-center-svg,
+  body.sport-active .gauge-center-dot { opacity:0; }
+
+  /* Reserve explicit zones in the right-hand Sport Experience column. */
+  #view-modes.active {
+    grid-template-rows:auto minmax(0,1fr) auto minmax(154px,.78fr);
+    gap:7px;
+  }
+  .sport-settings {
+    display:flex;
+    flex-direction:column;
+    min-height:0;
+    overflow:hidden;
+  }
+  .sport-settings-head,.setting-grid,.toggle-row { flex:0 0 auto; }
+  .select-wrap { min-width:0; }
+  .select-wrap select { min-width:0; text-overflow:ellipsis; }
+}
+
+@media (min-width:1000px) and (max-height:700px) {
+  .speed-readout { top:27.5%; }
+  .gauge-shell { inset:5px 2% 0; }
+  .gauge-svg { width:min(650px,88%); max-height:calc(100% - 8px); }
+  .run-kicker { margin-bottom:2px; }
+  body.sport-active .sport-stopwatch {
+    width:210px;
+    height:64px;
+    margin-top:7px;
+    padding:5px 12px 5px;
+    grid-template-rows:10px 27px 14px;
+  }
+  .timer-time strong { font-size:27px; }
+  body.sport-active .sport-result { height:14px; padding-top:2px; font-size:7.5px; }
+  #view-modes.active { grid-template-rows:auto minmax(0,1fr) auto minmax(142px,.72fr); gap:5px; }
+  .sport-settings-head { margin-bottom:4px; }
+  .setting-grid { gap:4px; }
+  .select-wrap { padding:5px 6px; }
+  .toggle-row { margin-top:4px; gap:6px 8px; }
+  .switch-label { font-size:7.5px; }
+}
+
+@media (min-width:1000px) and (max-height:625px) {
+  .speed-readout { top:27%; }
+  .gauge-svg { width:min(610px,86%); }
+  #view-modes .section-head p { display:none; }
+  .mode-grid { gap:5px; }
+  .mode-card { padding:6px 8px; }
+  .mode-sub { display:none; }
+  .controls-card { padding:7px 8px; }
+  .sport-settings { padding:7px 8px; }
+  .sport-settings h2 { font-size:11px; }
+  .setting-grid { grid-template-columns:repeat(3,minmax(0,1fr)); }
+  .select-wrap span { font-size:6.5px; }
+  .select-wrap select { font-size:8px; }
+}
+
   </style>
 </head>
 <body>
@@ -550,7 +663,7 @@ body.sport-active .metric:first-child { box-shadow:inset 0 0 0 1px rgba(255,48,3
         <div class="brand-mark" aria-hidden="true">E</div>
         <div>
           <div class="brand">EVDRIVE</div>
-          <div class="version">V14 · SPORT COCKPIT · CLASSIC DIESEL</div>
+          <div class="version">V14.1 · SPORT COCKPIT · COLLISION FIX</div>
         </div>
       </div>
       <div class="top-actions">
@@ -606,11 +719,10 @@ body.sport-active .metric:first-child { box-shadow:inset 0 0 0 1px rgba(255,48,3
             <div id="speedValue" class="speed-value">0</div>
             <div class="speed-unit">km/h</div>
             <div class="sport-stopwatch" id="sportStopwatch">
-              <span>0–100</span>
-              <strong id="sportTimer">0.00</strong>
-              <small>s</small>
+              <span class="timer-label">0–100</span>
+              <div class="timer-time"><strong id="sportTimer">0.00</strong><small>s</small></div>
+              <div class="sport-result" id="sportResult">BEST —</div>
             </div>
-            <div class="sport-result" id="sportResult">BEST —</div>
             <div class="engine-status" id="engineStatus"><span>CLASSIC DIESEL</span><strong id="engineRpm">800 RPM</strong><small id="engineGear">GEAR 1</small></div>
           </div>
         </div>

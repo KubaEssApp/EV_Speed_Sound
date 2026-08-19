@@ -1,29 +1,22 @@
-# EVDRIVE V14 – Tesla Cockpit + Classic Diesel
+# EVDRIVE V14.1 · Sport Cockpit Collision Fix
 
-## Neu in V14
-- Tesla-Querformat-Cockpit: Tacho links dominant, Bedienung rechts kompakt, keine Seiten-Scrollerei im Desktop-/Tesla-Layout.
-- 6 Drive Modes: SPORT EXPERIENCE, CYBER EV, POD RACER, V10 SYNTH, CLASSIC DIESEL, WARP.
-- CLASSIC DIESEL mit dynamischer WebAudio-Synthese:
-  - virtueller 4-Zylinder-/4-Takt-Verbrennungsrhythmus
-  - Leerlauf und lastabhängige Drehzahl
-  - 7 simulierte Gänge mit Drehzahlabfall beim Schalten
-  - tiefer Abgas-/Rumble-Anteil
-  - mechanisches Diesel-Nageln
-  - Ansaug-/Turbo-Anteil abhängig von Last und Drehzahl
-  - Live-Anzeige von RPM und virtuellem Gang
-- Schnellere Lastreaktion über DeviceMotion, wenn vom Browser verfügbar.
-- SPORT EXPERIENCE und 0–100-Logik aus V14.1 bleiben erhalten.
+This build keeps the V14 Sport Cockpit and Classic Diesel functions and fixes the Sport Experience layout for Tesla-style landscape browser sizes.
 
-## Empfohlener Test
-1. `index.html` über HTTPS hosten (z. B. GitHub Pages).
-2. Im Tesla-Browser öffnen.
-3. `DEMO ON` aktivieren.
-4. `CLASSIC DIESEL` auswählen.
-5. `START SOUND` drücken.
-6. Master Volume zunächst bei 45–60 % testen.
+## V14.1 fixes
+- Speed/SPORT cluster is top-anchored so enabling SPORT no longer shifts it into the gauge scale.
+- READY no longer collides with the 120 km/h scale label.
+- 0–100 time and BEST result are combined into one performance pod.
+- Sport gauge pivot/halo is hidden so it cannot overlap the 0–100 pod at shorter viewport heights.
+- Right-hand Sport Voice controls use reserved grid space and compact height-specific breakpoints.
+- Extra short-landscape breakpoint reduces mode-card copy before any field can collide.
+- No-scroll cockpit layout retained for landscape viewports >= 1000 px wide and >= 600 px high.
 
-## Hinweise
-- Browser-Audio muss durch einen manuellen Klick freigegeben werden; deshalb ist `START SOUND` erforderlich.
-- GPS-Update-Raten und DeviceMotion-Unterstützung unterscheiden sich je nach Browser/Hardware.
-- Der Diesel-Sound wird vollständig in Echtzeit erzeugt und benötigt keine externen Audiodateien.
-- Die App verändert keinen Tesla-Fahrmodus und greift nicht in Fahrzeugsteuerungen ein.
+## Tested viewport profiles
+- 1024 × 600
+- 1100 × 600
+- 1280 × 650
+- 1280 × 720
+- 1366 × 768
+- 1440 × 720
+- 1536 × 864
+- 1920 × 1080
